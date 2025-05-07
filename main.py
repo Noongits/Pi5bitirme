@@ -6,6 +6,7 @@ from apriltag_detection import *
 import state
 import time
 
+
 if __name__ == '__main__':
     sensor_thread = threading.Thread(target=sensor_loop, daemon=True)
     sensor_thread.start()
@@ -15,6 +16,7 @@ if __name__ == '__main__':
 
     apriltag_thread = threading.Thread(target=detect_apriltag, daemon=True)
     apriltag_thread.start()
+
     try:
         while True:
             

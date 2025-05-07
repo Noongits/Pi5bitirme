@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for,jsonify, Response
 from flask_cors import CORS
 import RPi.GPIO as GPIO
+from datetime import datetime
 import threading
 from motor_controller import *
 import random
@@ -55,41 +56,38 @@ def stop():
     stop_motors()
     return redirect(url_for('index'))
 
-@app.route('/video_feed')
-def video_feed():
-    """Video streaming route. Put this in the src attribute of an <img> tag."""
-    return Response(_gen_frames(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
-def _gen_frames():
-    """Generator that yields JPEG-encoded frames from state.currentframe."""
+
+def gen_frames():
     while True:
-        # Wait until a frame is available
-        with frame_lock:
-            frame = state.currentframe.copy() if state.currentframe is not None else None
+        # Try to get the latest frame without blocking
+        frame = None
+        if frame_lock.acquire(blocking=False):
+            frame = state.currentframe
+            frame_lock.release()
 
         if frame is None:
-            # no frame yet, just loop
             continue
 
-        # encode as JPEG
-        success, buffer = cv2.imencode('.jpg', frame)
-        if not success:
+        # Encode frame as JPEG
+        ret, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+        if not ret:
             continue
 
-        jpg = buffer.tobytes()
-
-        # yield frame in multipart format
+        frame_bytes = buffer.tobytes()
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + jpg + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
-
-
+@app.route('/video_feed')
+def video_feed():
+    # Streams the video frames to the client
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.route('/positions', methods=['GET'])
 def get_positions():
     
+    timestamp = datetime.now().isoformat()
     tag0 = {
         "x": state.tagarray[0, 0],
         "y": state.tagarray[0, 1],
@@ -131,7 +129,9 @@ def get_positions():
         "y": 0,
         "z": state.estimated_position[1]
     }
+    
     return jsonify({
+        "timestamp": timestamp,
         "aprilTagPosition": april_tag,
         "imuPosition": imu,
         "tag_0": tag0,

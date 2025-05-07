@@ -96,10 +96,8 @@ def detect_apriltag():
         # --- CAMERA 1 ---
         
         frame = picam2.capture_array()
-          # try to acquire lock without blocking; if it’s busy, skip this frame
-        if state["lock"].acquire(blocking=False):
-            state["currentframe"] = frame
-            state["lock"].release()
+        with state.lock:
+            state.currentframe = frame
         
         frame = cv2.rotate(frame, cv2.ROTATE_180)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)

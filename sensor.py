@@ -12,6 +12,7 @@ def sensor_loop():
     NUM_CALIBRATION_SAMPLES = 1000
     ax_off, ay_off, az_off, gx_off, gy_off, gz_off = mpu6050.calibrate(num_samples=NUM_CALIBRATION_SAMPLES)
     state.calibrated = True
+    print("calibrated mpu6050")
 
     # === Initialization ===
     prev_time = time.monotonic()
