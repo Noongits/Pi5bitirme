@@ -13,8 +13,8 @@ from motor_controller import *
 # Hardcoded AprilTag world coordinates (in meters)
 APRILTAG_COORDS = {
     0: np.array([0.0, 0.0, 4.0]),
-    2: np.array([-2.1, 2.55, 0.0]),
-    3: np.array([5.0, 0.0, 0.0]),
+    2: np.array([2.0, 0.0, 4.0]),
+    3: np.array([2.3, 0.0, 4.0]),
     6: np.array([0.0, -5.0, 0.0]),
     8: np.array([-5.0, 0.0, 0.0])
 }
@@ -95,6 +95,10 @@ def detect_apriltag():
 
         # --- CAMERA 1 ---
         frame = picam2.capture_array()
+        if state.lock.acquire(blocking=False):
+            state.currentframe = frame
+            state.lock.release()
+        
         frame = cv2.rotate(frame, cv2.ROTATE_180)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         results = detector.detect(gray)
@@ -136,28 +140,27 @@ def detect_apriltag():
             stop_motors()
             continue
 
-'''
+        for tag in detected_tags:
+            relative_pos = tagarray[tag] # Tag wrt camera
+            tag_world = APRILTAG_COORDS[tag] # Tag real position
+            car_position_est = tag_world - relative_pos  # Car position in world, calculated according to tag detected
+            car_pose += car_position_est
+            print(f"Tag World: {tag_world} Tag reletive: {relative_pos}")
+        car_pose /= len(detected_tags)
+        print(f"Estimated position: {car_pose}")
+
+        '''
         nearest_tag = min(detected_tags, key=lambda tid: np.linalg.norm(tagarray[tid]))
         relative_pos = tagarray[nearest_tag] # Tag wrt camera
         tag_world = APRILTAG_COORDS[nearest_tag] # Tag real position
         car_position_est = tag_world - relative_pos # Car position in world, calculated according to tag detected
         car_pose = car_position_est
-'''
-
-        for tag in detected_tags:
-            relative_pos = tagarray[tag] # Tag wrt camera
-            tag_world = APRILTAG_COORDS[tag]
-            car_position_est = tag_world - relative_pos
-            car_pose += car_position_est
-            car_pose /= len(detected_tags)
-
-
-        print(f"Estimated position: {car_pose}  Tag World: {tag_world} Tag reletive: {relative_pos}")
+        '''
 
         # STAGE 0: Move forward
         if stage == 0 and NavMesh:
-            distance = np.linalg.norm(relative_pos)
-            print(f"To tag {nearest_tag}: {distance:.2f} m")
+            #distance = np.linalg.norm(relative_pos)
+            #print(f"To tag {nearest_tag}: {distance:.2f} m")
             if car_pose[2] < destination[2]:
                 move_forward()
                 state.currentlyForward = True
