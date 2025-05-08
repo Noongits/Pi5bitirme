@@ -19,11 +19,7 @@ if __name__ == '__main__':
 
     try:
         while True:
-            
-            
             if state.calibrated and False:
-                
-                
                 print("Forward {} Estimated Position (m): X={:.3f}, Y={:.3f}".format(
                     state.currentlyForward,
                     state.estimated_position[0], state.estimated_position[1]

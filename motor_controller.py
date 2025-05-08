@@ -95,7 +95,6 @@ def stop_motors():
 
 
 def move_forward(duration=1):
-   
     FRONT_left_motor_forward()
     FRONT_right_motor_forward()
     BACK_left_motor_forward()
