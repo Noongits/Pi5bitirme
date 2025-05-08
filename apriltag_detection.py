@@ -96,8 +96,9 @@ def detect_apriltag():
         # --- CAMERA 1 ---
         
         frame = picam2.capture_array()
-        with state.lock:
+        if state.lock.acquire(blocking=False):
             state.currentframe = frame
+            state.lock.release()
         
         frame = cv2.rotate(frame, cv2.ROTATE_180)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)

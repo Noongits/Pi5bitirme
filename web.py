@@ -5,8 +5,10 @@ from datetime import datetime
 import threading
 from motor_controller import *
 import random
+import io
 import state
 import cv2
+from PIL import Image
 
 frame_lock = threading.Lock()
 
@@ -57,31 +59,73 @@ def stop():
     return redirect(url_for('index'))
 
 
+import cv2
+import numpy as np
 
-def gen_frames():
+def gen_frames(target_size=(320, 240), jpeg_quality=70):
+    """
+    Generator that grabs the latest numpy frame from state.currentframe,
+    flips it horizontally, downscales it to `target_size`, encodes as JPEG
+    with Pillow, and yields it in multipart/x-mixed-replace format.
+    """
     while True:
-        # Try to get the latest frame without blocking
         frame = None
-        if frame_lock.acquire(blocking=False):
+        # non-blocking lock check
+        if state.lock.acquire(blocking=False):
             frame = state.currentframe
-            frame_lock.release()
+            state.lock.release()
 
         if frame is None:
             continue
 
-        # Encode frame as JPEG
-        ret, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
-        if not ret:
-            continue
+        # 1) Convert numpy array to PIL Image
+        img = Image.fromarray(frame).convert("RGB")
 
-        frame_bytes = buffer.tobytes()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+        # 2) Flip horizontally
+        #img = img.transpose(Image.FLIP_LEFT_RIGHT)
+        # If you prefer a vertical flip instead, use:
+        img = img.transpose(Image.FLIP_TOP_BOTTOM)
+
+        # 3) Downscale to target_size using high-quality resampling
+        img = img.resize(target_size, Image.ANTIALIAS)
+
+        # 4) Encode as JPEG
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=jpeg_quality)
+        frame_bytes = buf.getvalue()
+
+        yield (
+            b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
+        )
+        
+def gen_framesbos():
+    """
+    Generator that yields a pre-encoded white JPEG frame forever,
+    so you don’t re-encode on each iteration.
+    """
+    width, height = 320, 240
+    # create a white PIL image once
+    white_img = Image.new("RGB", (width, height), (100, 255, 255))
+    buf = io.BytesIO()
+    white_img.save(buf, format="JPEG", quality=70)
+    white_jpeg = buf.getvalue()
+
+    # just loop over the pre-encoded JPEG bytes
+    while True:
+        yield (
+            b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + white_jpeg + b'\r\n'
+        )
 
 @app.route('/video_feed')
 def video_feed():
     # Streams the video frames to the client
-    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    print("video feed istegi")
+    if state.currentframe is None:
+        return Response(gen_framesbos(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    else:
+        return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.route('/positions', methods=['GET'])

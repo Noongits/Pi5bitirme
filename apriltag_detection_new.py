@@ -136,11 +136,21 @@ def detect_apriltag():
             stop_motors()
             continue
 
+'''
         nearest_tag = min(detected_tags, key=lambda tid: np.linalg.norm(tagarray[tid]))
-        relative_pos = tagarray[nearest_tag]
-        tag_world = APRILTAG_COORDS[nearest_tag]
-        car_position_est = tag_world - relative_pos
+        relative_pos = tagarray[nearest_tag] # Tag wrt camera
+        tag_world = APRILTAG_COORDS[nearest_tag] # Tag real position
+        car_position_est = tag_world - relative_pos # Car position in world, calculated according to tag detected
         car_pose = car_position_est
+'''
+
+        for tag in detected_tags:
+            relative_pos = tagarray[tag] # Tag wrt camera
+            tag_world = APRILTAG_COORDS[tag]
+            car_position_est = tag_world - relative_pos
+            car_pose += car_position_est
+            car_pose /= len(detected_tags)
+
 
         print(f"Estimated position: {car_pose}  Tag World: {tag_world} Tag reletive: {relative_pos}")
 
