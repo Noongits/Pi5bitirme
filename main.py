@@ -1,6 +1,5 @@
 import threading
 from motor_controller import *
-from sensor import sensor_loop
 from web import run_control_server
 from apriltag_detection import *
 import state
@@ -8,9 +7,6 @@ import time
 
 
 if __name__ == '__main__':
-    sensor_thread = threading.Thread(target=sensor_loop, daemon=True)
-    sensor_thread.start()
-
     control_thread = threading.Thread(target=run_control_server, daemon=True)
     control_thread.start()
 
@@ -24,7 +20,6 @@ if __name__ == '__main__':
                     state.currentlyForward,
                     state.estimated_position[0], state.estimated_position[1]
                 ))
-                
             time.sleep(0.05)
     except KeyboardInterrupt:
         stop_motors()

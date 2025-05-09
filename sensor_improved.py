@@ -25,7 +25,7 @@ class KalmanFilter:
 
         return self.posteri_estimate
 
-def detect_stationary(acc_data, threshold=0.1):
+def detect_stationary(acc_data, threshold=0.05):
     """Detect if the device is stationary based on acceleration variance"""
     return np.var(acc_data) < threshold
 
@@ -47,9 +47,9 @@ def sensor_loop():
     print("Calibration complete")
 
     # === Initialize Kalman Filters ===
-    kf_x = KalmanFilter(process_variance=0.1, measurement_variance=0.5)
-    kf_y = KalmanFilter(process_variance=0.1, measurement_variance=0.5)
-    kf_z = KalmanFilter(process_variance=0.1, measurement_variance=0.5)
+    kf_x = KalmanFilter(process_variance=0.01, measurement_variance=0.1)
+    kf_y = KalmanFilter(process_variance=0.01, measurement_variance=0.1)
+    kf_z = KalmanFilter(process_variance=0.01, measurement_variance=0.1)
 
     # === Initialize Variables ===
     prev_time = time.monotonic()
@@ -69,6 +69,9 @@ def sensor_loop():
     last_stationary_time = time.monotonic()
     ZUPT_TIMEOUT = 0.5  # seconds
 
+    # Only integrate if acceleration is above noise floor
+    MIN_ACCELERATION = 0.01  # m/s²
+
     while True:
         try:
             # === Time Delta ===
@@ -79,10 +82,10 @@ def sensor_loop():
             # === Read Sensor Data ===
             data = mpu.read_raw_data()
             
-            # Convert raw data to g
-            ax = (data['ax'] - offsets['ax']) / 16384.0
-            ay = (data['ay'] - offsets['ay']) / 16384.0
-            az = (data['az'] - offsets['az']) / 16384.0
+            # Convert raw data to m/s²
+            ax = (data['ax'] - offsets['ax']) * 9.81 / 16384.0
+            ay = (data['ay'] - offsets['ay']) * 9.81 / 16384.0
+            az = (data['az'] - offsets['az']) * 9.81 / 16384.0
             
             # Apply Kalman filtering
             ax_filtered = kf_x.update(ax)
@@ -102,13 +105,14 @@ def sensor_loop():
                 last_stationary_time = current_time
                 velocity = [0.0, 0.0, 0.0]
             elif current_time - last_stationary_time > ZUPT_TIMEOUT:
-                # Only integrate if we're not in ZUPT
-                velocity[0] += ax_filtered * dt
-                velocity[1] += ay_filtered * dt
-                velocity[2] += az_filtered * dt
+                # Only integrate if we're not in ZUPT and acceleration is above noise floor
+                if abs(ax_filtered) > MIN_ACCELERATION or abs(ay_filtered) > MIN_ACCELERATION or abs(az_filtered) > MIN_ACCELERATION:
+                    velocity[0] += ax_filtered * dt
+                    velocity[1] += ay_filtered * dt
+                    velocity[2] += az_filtered * dt
                 
                 # Apply velocity damping
-                damping = math.exp(-0.5 * dt)  # Adjust damping coefficient as needed
+                damping = math.exp(-0.1 * dt)  # Reduced damping coefficient
                 velocity = [v * damping for v in velocity]
                 
                 # Update position
@@ -118,6 +122,7 @@ def sensor_loop():
             
             # Update state
             state.estimated_position = position.copy()
+            print(f"Velocity: {velocity}")
             
             # Small sleep to prevent CPU overload
             time.sleep(0.001)
@@ -127,4 +132,11 @@ def sensor_loop():
             time.sleep(0.1)
 
 if __name__ == "__main__":
-    sensor_loop() 
+    try:
+        sensor_loop()
+    except KeyboardInterrupt:
+        print("\nProgram terminated by user. Shutting down gracefully...")
+    except Exception as e:
+        print(f"\nUnexpected error occurred: {e}")
+    finally:
+        print("Sensor loop stopped.")
