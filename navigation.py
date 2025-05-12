@@ -1,15 +1,59 @@
 from motor_controller import *
+from apriltag_detection import *
+from localisation import *
 import time
-import state
+import variables
 
 def navigate(x, y):
-    
+    stage = 0
+
+    # STAGE 0: Move forward
+    if stage == 0 and NavMesh:
+        #distance = np.linalg.norm(relative_pos)
+        #print(f"To tag {nearest_tag}: {distance:.2f} m")
+        if car_pose[2] < destination[2]:
+            move_forward()
+            variables.currentlyForward = True
+        else:
+            stop_motors()
+            variables.currentlyForward = False
+            print("Close to tag. Preparing to turn...")
+            stage = 1
+
+    # STAGE 1: Turn left or right
+    elif stage == 1 and NavMesh:
+        dx = destination[0] - car_pose[0]
+        direction = "left" if dx < 0 else "right"
+        print(f"Turning {direction}...")
+        if direction == "left":
+            turn_left()
+        else:
+            turn_right()
+        time.sleep(1.5)  # Adjust for 90-degree turn
+        stop_motors()
+        stage = 2
+
+    # STAGE 2: Move toward destination
+    elif stage == 2 and NavMesh:
+        dist_to_dest = np.linalg.norm(destination[:2] - car_pose[:2])
+        print(f"Distance to destination: {dist_to_dest:.2f} m")
+        if dist_to_dest > 0.2:
+            move_forward()
+            variables.currentlyForward = True
+        else:
+            stop_motors()
+            variables.destination_reached = True
+            print("Destination reached.")
 
 
 
-
-
-
+    '''
+    nearest_tag = min(detected_tags, key=lambda tid: np.linalg.norm(tagarray[tid]))
+    relative_pos = tagarray[nearest_tag] # Tag wrt camera
+    tag_world = APRILTAG_COORDS[nearest_tag] # Tag real position
+    car_position_est = tag_world - relative_pos # Car position in world, calculated according to tag detected
+    car_pose = car_position_est
+    '''
 
     '''
     if abs(x) >= 5 or abs(z) >= 5:

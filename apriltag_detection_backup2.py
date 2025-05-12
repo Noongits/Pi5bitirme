@@ -5,7 +5,7 @@ import signal
 import sys
 import numpy as np
 import time
-import state
+import variables
 from motor_controller import *
 
 # --- CONFIG ---
@@ -88,7 +88,7 @@ def detect_apriltag():
     start_time = time.time()
 
     while True:
-        if not state.calibrated:
+        if not variables.calibrated:
             continue
 
         tagarray = np.zeros((15+1, 3), dtype=float)
@@ -96,9 +96,9 @@ def detect_apriltag():
         # --- CAMERA 1 ---
         
         frame = picam2.capture_array()
-        if state.lock.acquire(blocking=False):
-            state.currentframe = frame
-            state.lock.release()
+        if variables.lock.acquire(blocking=False):
+            variables.currentframe = frame
+            variables.lock.release()
         
         frame = cv2.rotate(frame, cv2.ROTATE_180)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -132,7 +132,7 @@ def detect_apriltag():
                 else:
                     tagarray[idx, :] = vec
 
-        state.tagarray = tagarray
+        variables.tagarray = tagarray
 
         # Pose estimation
         detected_tags = [tid for tid in APRILTAG_COORDS if np.any(tagarray[tid] != 0)]
@@ -155,10 +155,10 @@ def detect_apriltag():
             print(f"To tag {nearest_tag}: {distance:.2f} m")
             if distance > 2.5:
                 move_forward()
-                state.currentlyForward = True
+                variables.currentlyForward = True
             else:
                 stop_motors()
-                state.currentlyForward = False
+                variables.currentlyForward = False
                 print("Close to tag. Preparing to turn...")
                 stage = 1
 
@@ -181,7 +181,7 @@ def detect_apriltag():
             print(f"Distance to destination: {dist_to_dest:.2f} m")
             if dist_to_dest > 0.5:
                 move_forward()
-                state.currentlyForward = True
+                variables.currentlyForward = True
             else:
                 stop_motors()
                 print("Destination reached.")

@@ -5,10 +5,8 @@ import signal
 import sys
 import numpy as np
 import time
-import state
+import variables
 from motor_controller import *
-
-# --- CONFIG ---
 
 # Hardcoded AprilTag world coordinates (in meters)
 APRILTAG_COORDS = {
@@ -45,7 +43,6 @@ object_points = np.array([
 ], dtype=np.float32)
 
 # Initialize variables
-car_pose = np.array([0.0, 0.0, 0.0])  # x, y, theta
 stage = 0  # 0: forward, 1: turn, 2: final leg
 
 # Destination input
@@ -82,22 +79,22 @@ signal.signal(signal.SIGINT, signal_handler)
 
 # Main loop
 def detect_apriltag():
-    global stage, car_pose
+    global detected_tags
 
     frame_count = 0
     start_time = time.time()
 
     while True:
-        if not state.calibrated:
+        if not variables.calibrated:
             continue
 
         tagarray = np.zeros((15+1, 3), dtype=float)
 
         # --- CAMERA 1 ---
         frame = picam2.capture_array()
-        if state.lock.acquire(blocking=False):
-            state.currentframe = frame
-            state.lock.release()
+        if variables.lock.acquire(blocking=False):
+            variables.currentframe = frame
+            variables.lock.release()
         
         frame = cv2.rotate(frame, cv2.ROTATE_180)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -131,72 +128,13 @@ def detect_apriltag():
                 else:
                     tagarray[idx, :] = vec
 
-        state.tagarray = tagarray
+        variables.tagarray = tagarray
 
-        # Pose estimation
         detected_tags = [tid for tid in APRILTAG_COORDS if np.any(tagarray[tid] != 0)]
         if not detected_tags:
             #print("No known tags detected.")
             stop_motors()
             continue
-
-        # Reset car_pose for this iteration
-        car_pose = np.array([0.0, 0.0, 0.0])
-        
-        for tag in detected_tags:
-            relative_pos = tagarray[tag] # Tag wrt camera
-            tag_world = APRILTAG_COORDS[tag] # Tag real position
-            car_position_est = tag_world - relative_pos  # Car position in world, calculated according to tag detected
-            car_pose += car_position_est
-            print(f"Tag World: {tag_world} Tag reletive: {relative_pos}")
-        car_pose /= len(detected_tags)
-        print(f"Estimated position: {car_pose}")
-
-        '''
-        nearest_tag = min(detected_tags, key=lambda tid: np.linalg.norm(tagarray[tid]))
-        relative_pos = tagarray[nearest_tag] # Tag wrt camera
-        tag_world = APRILTAG_COORDS[nearest_tag] # Tag real position
-        car_position_est = tag_world - relative_pos # Car position in world, calculated according to tag detected
-        car_pose = car_position_est
-        '''
-
-        # STAGE 0: Move forward
-        if stage == 0 and NavMesh:
-            #distance = np.linalg.norm(relative_pos)
-            #print(f"To tag {nearest_tag}: {distance:.2f} m")
-            if car_pose[2] < destination[2]:
-                move_forward()
-                state.currentlyForward = True
-            else:
-                stop_motors()
-                state.currentlyForward = False
-                print("Close to tag. Preparing to turn...")
-                stage = 1
-
-        # STAGE 1: Turn left or right
-        elif stage == 1 and NavMesh:
-            dx = destination[0] - car_pose[0]
-            direction = "left" if dx < 0 else "right"
-            print(f"Turning {direction}...")
-            if direction == "left":
-                turn_left()
-            else:
-                turn_right()
-            time.sleep(1.5)  # Adjust for 90-degree turn
-            stop_motors()
-            stage = 2
-
-        # STAGE 2: Move toward destination
-        elif stage == 2 and NavMesh:
-            dist_to_dest = np.linalg.norm(destination[:2] - car_pose[:2])
-            print(f"Distance to destination: {dist_to_dest:.2f} m")
-            if dist_to_dest > 0.2:
-                move_forward()
-                state.currentlyForward = True
-            else:
-                stop_motors()
-                print("Destination reached.")
-                break
 
         # FPS print
         frame_count += 1
@@ -207,3 +145,5 @@ def detect_apriltag():
             frame_count = 0
             start_time = current_time
 
+        if variables.destination_reached:
+            break

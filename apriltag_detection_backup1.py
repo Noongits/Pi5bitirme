@@ -5,7 +5,7 @@ import signal
 import sys
 import numpy as np
 import time
-import state
+import variables
 from motor_controller import *
 
 # Initialize both cameras with separate instances
@@ -72,14 +72,14 @@ frame_count = 0
 def detect_apriltag():
     while True:
         
-        if not state.calibrated:
+        if not variables.calibrated:
             continue
         tagarray = np.zeros((15+1, 3), dtype=float)
         
         global frame_count
         global start_time
     
-        if state.calibrated:
+        if variables.calibrated:
             print(f"\n frame {frame_count} :")
         frame = picam2.capture_array()
         frame = cv2.rotate(frame, cv2.ROTATE_180)
@@ -88,14 +88,14 @@ def detect_apriltag():
         
         results = detector.detect(gray)
         if debug and results:
-            if state.calibrated:
+            if variables.calibrated:
                 print("Camera 2.1 detected tags:")
         for r in results:
             #print(f"ID: {r.tag_id}, Center: {r.center}")
             image_points = np.array(r.corners, dtype=np.float32)
             retval, rvec, tvec = cv2.solvePnP(object_points, image_points, camera_matrix2, dist_coeffs2)
             if retval:
-                if state.calibrated:
+                if variables.calibrated:
                     #print(f"ID: {r.tag_id} Pose: rvec: {rvec.ravel()}, tvec: {tvec.ravel()}")
                     idx = int(r.tag_id)
                     vec = tvec.ravel()      
@@ -113,14 +113,14 @@ def detect_apriltag():
         
         results2 = detector.detect(gray2)
         if debug and results2:
-                if state.calibrated:
+                if variables.calibrated:
                     print("Camera 1.3 detected tags:")
         for r in results2:
             #print(f"ID: {r.tag_id}, Center: {r.center}, ")
             image_points = np.array(r.corners, dtype=np.float32)
             retval, rvec, tvec = cv2.solvePnP(object_points, image_points, camera_matrix, dist_coeffs)
             if retval:
-                    if state.calibrated:
+                    if variables.calibrated:
                         #print(f"ID: {r.tag_id}, Pose: rvec: {rvec.ravel()}, tvec: {tvec.ravel()}")
                         idx = int(r.tag_id)
                         vec = tvec.ravel()            # shape (3,)
@@ -133,13 +133,13 @@ def detect_apriltag():
     
         
         # Calculate and print FPS every second
-        if state.calibrated:
+        if variables.calibrated:
             #print(tagarray)
-            state.tagarray = tagarray
+            variables.tagarray = tagarray
             print(tagarray[0, 2])
-            if tagarray[0, 2] > 3.5 and state.currentlyForward == False:
+            if tagarray[0, 2] > 3.5 and variables.currentlyForward == False:
                 move_forward()
-            if tagarray[0, 2] <= 3.5 and state.currentlyForward:
+            if tagarray[0, 2] <= 3.5 and variables.currentlyForward:
                 stop_motors
             
             
@@ -148,7 +148,7 @@ def detect_apriltag():
         elapsed_time = current_time - start_time
         if elapsed_time >= 1.0:
             fps = frame_count / elapsed_time
-            if state.calibrated:
+            if variables.calibrated:
                 print(f"FPS: {fps:.2f}")
             frame_count = 0
             start_time = current_time

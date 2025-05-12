@@ -3,7 +3,7 @@ import threading
 import math
 import time
 from navigation import navigate
-import state
+import variables
 
 def sensor_loop():
     mpu6050.mpu6050_init()
@@ -11,7 +11,7 @@ def sensor_loop():
     # === Calibration ===
     NUM_CALIBRATION_SAMPLES = 1000
     ax_off, ay_off, az_off, gx_off, gy_off, gz_off = mpu6050.calibrate(num_samples=NUM_CALIBRATION_SAMPLES)
-    state.calibrated = True
+    variables.calibrated = True
     print("calibrated mpu6050")
 
     # === Initialization ===
@@ -47,7 +47,7 @@ def sensor_loop():
             filtered_acc[2] = ema_alpha * raw_az + (1 - ema_alpha) * filtered_acc[2]
 
             # === Reset velocity when not moving ===
-            if not state.currentlyForward and not state.currentlyBackward:
+            if not variables.currentlyForward and not variables.currentlyBackward:
                 velocity[0] = velocity[1] = 0.0
 
             # === Integrate Acceleration to Estimate Velocity ===
@@ -56,8 +56,8 @@ def sensor_loop():
             velocity[2] = (velocity[2] + filtered_acc[2] * dt) * damping_factor
 
             # === Integrate Velocity to Estimate Position ===
-            state.estimated_position[0] += velocity[0] * dt
-            state.estimated_position[1] += velocity[1] * dt
+            variables.estimated_position[0] += velocity[0] * dt
+            variables.estimated_position[1] += velocity[1] * dt
             # Optionally use Z too if needed
 
             time.sleep(0.001)

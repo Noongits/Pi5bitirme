@@ -1,9 +1,8 @@
-
 import threading
 from motor_controller import *
 from sensor import sensor_loop
 from web import run_control_server
-import state
+import variables
 import time
 import threading
 from web import run_control_server

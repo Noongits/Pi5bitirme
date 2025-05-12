@@ -1,5 +1,5 @@
 import time
-import state
+import variables
 import RPi.GPIO as GPIO
 
 currentlyForward = False
@@ -99,9 +99,9 @@ def move_forward(duration=1):
     FRONT_right_motor_forward()
     BACK_left_motor_forward()
     BACK_right_motor_forward()
-    state.currentlyForward = True
+    variables.currentlyForward = True
     time.sleep(duration)
-    state.currentlyForward = False
+    variables.currentlyForward = False
     stop_motors()
 
 def move_backward(duration=1):
@@ -109,9 +109,9 @@ def move_backward(duration=1):
     FRONT_right_motor_backward()
     BACK_left_motor_backward()
     BACK_right_motor_backward()
-    state.currentlyBackward = True
+    variables.currentlyBackward = True
     time.sleep(duration)
-    state.currentlyBackward = False
+    variables.currentlyBackward = False
     stop_motors()
 
 def turn_left(duration=1.5):
@@ -119,9 +119,9 @@ def turn_left(duration=1.5):
     BACK_left_motor_stop()
     FRONT_right_motor_forward()
     BACK_right_motor_forward()
-    state.currentlyLeft = True
+    variables.currentlyLeft = True
     time.sleep(duration)
-    state.currentlyLeft = False
+    variables.currentlyLeft = False
     stop_motors()
 
 def turn_right(duration=1.5):
@@ -129,7 +129,7 @@ def turn_right(duration=1.5):
     BACK_left_motor_forward()
     FRONT_right_motor_stop()
     BACK_right_motor_stop()
-    state.currentlyRight = True
+    variables.currentlyRight = True
     time.sleep(duration)
-    state.currentlyRight = False
+    variables.currentlyRight = False
     stop_motors()

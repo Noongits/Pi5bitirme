@@ -4,7 +4,7 @@ import math
 import time
 import numpy as np
 from navigation import navigate
-import state
+import variables
 
 class KalmanFilter:
     def __init__(self, process_variance, measurement_variance):
@@ -43,7 +43,7 @@ def sensor_loop():
         print("Performing new calibration...")
         offsets = mpu.calibrate(save_path=calib_file)
     
-    state.calibrated = True
+    variables.calibrated = True
     print("Calibration complete")
 
     # === Initialize Kalman Filters ===
@@ -121,7 +121,7 @@ def sensor_loop():
                 position[2] += velocity[2] * dt
             
             # Update state
-            state.estimated_position = position.copy()
+            variables.estimated_position = position.copy()
             print(f"Velocity: {velocity}")
             
             # Small sleep to prevent CPU overload

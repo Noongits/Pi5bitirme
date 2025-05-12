@@ -2,9 +2,10 @@ import threading
 from motor_controller import *
 from web import run_control_server
 from apriltag_detection import *
-import state
+from localisation import *
+from navigation import *
+import variables
 import time
-
 
 if __name__ == '__main__':
     control_thread = threading.Thread(target=run_control_server, daemon=True)
@@ -13,12 +14,18 @@ if __name__ == '__main__':
     apriltag_thread = threading.Thread(target=detect_apriltag, daemon=True)
     apriltag_thread.start()
 
+    localisation_thread = threading.Thread(target=self_localise, daemon=True)
+    localisation_thread.start()
+
+    navigation_thread = threading.Thread(target=navigate, daemon=True)
+    navigation_thread.start()
+
     try:
         while True:
-            if state.calibrated and False:
+            if variables.calibrated and False:
                 print("Forward {} Estimated Position (m): X={:.3f}, Y={:.3f}".format(
-                    state.currentlyForward,
-                    state.estimated_position[0], state.estimated_position[1]
+                    variables.currentlyForward,
+                    variables.estimated_position[0], variables.estimated_position[1]
                 ))
             time.sleep(0.05)
     except KeyboardInterrupt:

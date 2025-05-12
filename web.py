@@ -6,7 +6,7 @@ import threading
 from motor_controller import *
 import random
 import io
-import state
+import variables
 import cv2
 from PIL import Image
 
@@ -71,9 +71,9 @@ def gen_frames(target_size=(320, 240), jpeg_quality=70):
     while True:
         frame = None
         # non-blocking lock check
-        if state.lock.acquire(blocking=False):
-            frame = state.currentframe
-            state.lock.release()
+        if variables.lock.acquire(blocking=False):
+            frame = variables.currentframe
+            variables.lock.release()
 
         if frame is None:
             continue
@@ -122,7 +122,7 @@ def gen_framesbos():
 def video_feed():
     # Streams the video frames to the client
     print("video feed istegi")
-    if state.currentframe is None:
+    if variables.currentframe is None:
         return Response(gen_framesbos(), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
         return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -133,45 +133,45 @@ def get_positions():
     
     timestamp = datetime.now().isoformat()
     tag0 = {
-        "x": state.tagarray[0, 0],
-        "y": state.tagarray[0, 1],
-        "z": state.tagarray[0, 2]
+        "x": variables.tagarray[0, 0],
+        "y": variables.tagarray[0, 1],
+        "z": variables.tagarray[0, 2]
     }
     tag1 = {
-        "x": state.tagarray[1, 0],
-        "y": state.tagarray[1, 1],
-        "z": state.tagarray[1, 2]
+        "x": variables.tagarray[1, 0],
+        "y": variables.tagarray[1, 1],
+        "z": variables.tagarray[1, 2]
     }
     tag2 = {
-        "x": state.tagarray[2, 0],
-        "y": state.tagarray[2, 1],
-        "z": state.tagarray[2, 2]
+        "x": variables.tagarray[2, 0],
+        "y": variables.tagarray[2, 1],
+        "z": variables.tagarray[2, 2]
     }
     tag3 = {
-        "x": state.tagarray[3, 0],
-        "y": state.tagarray[3, 1],
-        "z": state.tagarray[3, 2]
+        "x": variables.tagarray[3, 0],
+        "y": variables.tagarray[3, 1],
+        "z": variables.tagarray[3, 2]
     }
     tag4 = {
-        "x": state.tagarray[4, 0],
-        "y": state.tagarray[4, 1],
-        "z": state.tagarray[4, 2]
+        "x": variables.tagarray[4, 0],
+        "y": variables.tagarray[4, 1],
+        "z": variables.tagarray[4, 2]
     }
     tag5 = {
-        "x": state.tagarray[5, 0],
-        "y": state.tagarray[5, 1],
-        "z": state.tagarray[5, 2]
+        "x": variables.tagarray[5, 0],
+        "y": variables.tagarray[5, 1],
+        "z": variables.tagarray[5, 2]
     }
 
     april_tag = {
-        "x": state.estimated_position[0],
+        "x": variables.estimated_position[0],
         "y": 0,
-        "z": state.estimated_position[1]
+        "z": variables.estimated_position[1]
     }
     imu = {
-        "x": state.estimated_position[0],
+        "x": variables.estimated_position[0],
         "y": 0,
-        "z": state.estimated_position[1]
+        "z": variables.estimated_position[1]
     }
     
     return jsonify({

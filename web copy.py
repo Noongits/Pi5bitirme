@@ -3,7 +3,7 @@ from flask_cors import CORS
 import RPi.GPIO as GPIO
 from motor_controller import *
 import random
-import state
+import variables
 
 
 app = Flask(__name__)
@@ -56,19 +56,19 @@ def stop():
 def get_positions():
     
     tag0 = {
-        "x": state.tagarray[0, 0],
-        "y": state.tagarray[0, 1],
-        "z": state.tagarray[0, 2]
+        "x": variables.tagarray[0, 0],
+        "y": variables.tagarray[0, 1],
+        "z": variables.tagarray[0, 2]
     }
     april_tag = {
-        "x": state.estimated_position[0],
+        "x": variables.estimated_position[0],
         "y": 0,
-        "z": state.estimated_position[1]
+        "z": variables.estimated_position[1]
     }
     imu = {
-        "x": state.estimated_position[0],
+        "x": variables.estimated_position[0],
         "y": 0,
-        "z": state.estimated_position[1]
+        "z": variables.estimated_position[1]
     }
     return jsonify({
         "aprilTagPosition": april_tag,
