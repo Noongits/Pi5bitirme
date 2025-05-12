@@ -8,22 +8,15 @@ import variables
 import time
 
 if __name__ == '__main__':
-    control_thread = threading.Thread(target=run_control_server)
-    #control_thread.start()
+    control_thread = threading.Thread(target=run_control_server, daemon=True)
+    control_thread.start()
 
-    navigation_thread = threading.Thread(target=navigate)
+    navigation_thread = threading.Thread(target=navigate, daemon=True)
     navigation_thread.start()
 
     try:
         while True:
-            if variables.calibrated and False:
-                print("Forward {} Estimated Position (m): X={:.3f}, Y={:.3f}".format(
-                    variables.currentlyForward,
-                    variables.estimated_position[0], variables.estimated_position[1]
-                ))
-            time.sleep(0.05)
+            time.sleep(1)  # Keep the main thread alive
     except KeyboardInterrupt:
-        
-
         stop_motors()
         print("Exiting main program.")

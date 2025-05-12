@@ -3,27 +3,30 @@ from apriltag_detection import *
 from localisation import *
 import time
 import variables
+import threading
 
 def navigate():
     stage = 0
+    '''
     # Destination input
     destination = np.array([
         float(input("Enter destination X (meters): ")),
         float(input("Enter destination Z (meters): ")),
         0.0
     ])
-
-    apriltag_thread = threading.Thread(target=detect_apriltag)
+    '''
+    
+    apriltag_thread = threading.Thread(target=detect_apriltag, daemon=True)
     apriltag_thread.start()
 
-    localisation_thread = threading.Thread(target=self_localise)
+    localisation_thread = threading.Thread(target=self_localise, daemon=True)
     localisation_thread.start()
 
     # STAGE 0: Move forward
     if stage == 0 and NavMesh:
         #distance = np.linalg.norm(relative_pos)
         #print(f"To tag {nearest_tag}: {distance:.2f} m")
-        if car_pose[2] < destination[2]:
+        if variables.car_pose[2] < variables.destination[2]:
             move_forward()
             variables.currentlyForward = True
         else:
@@ -34,7 +37,7 @@ def navigate():
 
     # STAGE 1: Turn left or right
     elif stage == 1 and NavMesh:
-        dx = destination[0] - car_pose[0]
+        dx = variables.destination[0] - variables.car_pose[0]
         direction = "left" if dx < 0 else "right"
         print(f"Turning {direction}...")
         if direction == "left":
@@ -47,7 +50,7 @@ def navigate():
 
     # STAGE 2: Move toward destination
     elif stage == 2 and NavMesh:
-        dist_to_dest = np.linalg.norm(destination[:2] - car_pose[:2])
+        dist_to_dest = np.linalg.norm(variables.destination[:2] - variables.car_pose[:2])
         print(f"Distance to destination: {dist_to_dest:.2f} m")
         if dist_to_dest > 0.2:
             move_forward()

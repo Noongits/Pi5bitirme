@@ -8,15 +8,6 @@ import time
 import variables
 from motor_controller import *
 
-# Hardcoded AprilTag world coordinates (in meters)
-APRILTAG_COORDS = {
-    0: np.array([0.0, 0.0, 4.0]),
-    2: np.array([2.0, 0.0, 4.0]),
-    3: np.array([2.3, 0.0, 4.0]),
-    6: np.array([0.0, -5.0, 0.0]),
-    8: np.array([-5.0, 0.0, 0.0])
-}
-
 # Camera intrinsics
 NavMesh = False
 fx = 1270
@@ -69,8 +60,6 @@ signal.signal(signal.SIGINT, signal_handler)
 
 # Main loop
 def detect_apriltag():
-    global detected_tags
-
     frame_count = 0
     start_time = time.time()
 
@@ -120,8 +109,8 @@ def detect_apriltag():
 
         variables.tagarray = tagarray
 
-        detected_tags = [tid for tid in APRILTAG_COORDS if np.any(tagarray[tid] != 0)]
-        if not detected_tags:
+        variables.detected_tags = [tid for tid in variables.APRILTAG_COORDS if np.any(tagarray[tid] != 0)]
+        if not variables.detected_tags:
             #print("No known tags detected.")
             stop_motors()
             continue
