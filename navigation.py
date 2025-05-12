@@ -4,8 +4,20 @@ from localisation import *
 import time
 import variables
 
-def navigate(x, y):
+def navigate():
     stage = 0
+    # Destination input
+    destination = np.array([
+        float(input("Enter destination X (meters): ")),
+        float(input("Enter destination Z (meters): ")),
+        0.0
+    ])
+
+    apriltag_thread = threading.Thread(target=detect_apriltag)
+    apriltag_thread.start()
+
+    localisation_thread = threading.Thread(target=self_localise)
+    localisation_thread.start()
 
     # STAGE 0: Move forward
     if stage == 0 and NavMesh:

@@ -8,16 +8,10 @@ import variables
 import time
 
 if __name__ == '__main__':
-    control_thread = threading.Thread(target=run_control_server, daemon=True)
-    control_thread.start()
+    control_thread = threading.Thread(target=run_control_server)
+    #control_thread.start()
 
-    apriltag_thread = threading.Thread(target=detect_apriltag, daemon=True)
-    apriltag_thread.start()
-
-    localisation_thread = threading.Thread(target=self_localise, daemon=True)
-    localisation_thread.start()
-
-    navigation_thread = threading.Thread(target=navigate, daemon=True)
+    navigation_thread = threading.Thread(target=navigate)
     navigation_thread.start()
 
     try:
@@ -29,5 +23,7 @@ if __name__ == '__main__':
                 ))
             time.sleep(0.05)
     except KeyboardInterrupt:
+        
+
         stop_motors()
         print("Exiting main program.")

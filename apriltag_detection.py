@@ -42,16 +42,6 @@ object_points = np.array([
     [-half_size, -half_size, 0]
 ], dtype=np.float32)
 
-# Initialize variables
-stage = 0  # 0: forward, 1: turn, 2: final leg
-
-# Destination input
-destination = np.array([
-    float(input("Enter destination X (meters): ")),
-    float(input("Enter destination Z (meters): ")),
-    0.0
-])
-
 # Setup cameras
 picam2 = Picamera2(camera_num=0)
 picam2num2 = Picamera2(camera_num=1)
