@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     try:
         while True:
-            time.sleep(1)  # Keep the main thread alive
+            time.sleep(1)
     except KeyboardInterrupt:
         stop_motors()
         print("Exiting main program.")
