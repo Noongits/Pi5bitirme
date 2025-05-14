@@ -4,7 +4,6 @@ from web import run_control_server
 from apriltag_detection import *
 from localisation import *
 from navigation import *
-import variables
 import time
 
 if __name__ == '__main__':

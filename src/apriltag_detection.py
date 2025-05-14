@@ -67,7 +67,7 @@ def detect_apriltag():
         if not variables.calibrated:
             continue
 
-        tagarray = np.zeros((15+1, 3), dtype=float)
+        tagarray = np.zeros((16, 3), dtype=float)
 
         # --- CAMERA 1 ---
         frame = picam2.capture_array()

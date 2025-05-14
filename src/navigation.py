@@ -13,6 +13,7 @@ def measure_angle(angle):
         return 180 if angle == -180 else angle
 
 def navigate():
+    time.sleep(2)
     # Destination input
     variables.destination = np.array([
         float(input("Enter destination X (meters): ")),
