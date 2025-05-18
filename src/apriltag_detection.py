@@ -84,6 +84,9 @@ def detect_apriltag():
             retval, rvec, tvec = cv2.solvePnP(object_points, image_points, camera_matrix2, dist_coeffs2)
             if retval:
                 idx = int(r.tag_id)
+                if idx > 15:
+                    print("contuniued")
+                    continue
                 vec = tvec.ravel()
                 if np.any(tagarray[idx, :] != 0):
                     tagarray[idx, :] = (tagarray[idx, :] + vec) / 2

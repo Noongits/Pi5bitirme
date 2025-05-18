@@ -38,13 +38,18 @@ def navigate():
         # print(f"Closest point on road: {closest_point}")
         if variables.start_on_x:
             if closest_point[0] > 0:
-                turn_right()
+                # turn_right()
                 variables.current_direction = measure_angle(variables.current_direction + 90)
             elif closest_point[0] < 0:
-                turn_left()
+                # turn_left()
                 variables.current_direction = measure_angle(variables.current_direction - 90)
-            while abs(variables.car_pose[0]) < abs(closest_point[0]):
-                move_forward()
+            while abs(closest_point[0] - variables.car_pose[0]):
+                print(variables.car_pose)
+                print(closest_point)
+                print("get closer")
+                # move_forward()
+                time.sleep(0.1)
+            print("close enough")
 
             if closest_point[1] > 0 and variables.current_direction == 90: # +y / +90
                 turn_left()
@@ -63,11 +68,16 @@ def navigate():
 
         else:
             if closest_point[1] < 0:
-                turn_right()
-                turn_right()
+                # turn_right()
+                # turn_right()
                 variables.current_direction = measure_angle(variables.current_direction + 180)
-            while abs(variables.car_pose[1]) < abs(closest_point[1]):
-                move_forward()
+            while abs(closest_point[1] - variables.car_pose[2]):
+                print(variables.car_pose)
+                print(closest_point)
+                print("get closer")
+                # move_forward()
+                time.sleep(0.1)
+            print("close enough")
 
             if closest_point[0] < 0 and variables.current_direction == 0: # +x / 0
                 turn_left()
@@ -83,7 +93,7 @@ def navigate():
                 variables.current_direction = measure_angle(variables.current_direction - 90)
             while abs(variables.car_pose[0]) < abs(closest_point[0]):
                 move_forward()
-    
+        
     elif variables.nav_mode == 2: # Move to AprilTag
         # TODO: Add function to turn to the correct angle
         if variables.tagarray[0, 2] > 0.5 and variables.currentlyForward == False:

@@ -4,10 +4,10 @@ import threading
 detected_tags = []
 APRILTAG_COORDS = {
     0: np.array([0.0, 0.0, 0.0]),
-    2: np.array([2.0, 2.0, 2.0]),
+    2: np.array([0.0, 0.0, 2.0]),
     3: np.array([-3.0, -3.0, -3.0]),
-    6: np.array([6.0, 6.0, 6.0]),
-    8: np.array([8.0, 8.0, 8.0])}
+    6: np.array([-2.0, 0.0, 3.0]),
+    8: np.array([0.0, 0.0, 4.0])}
 
 nav_mode = 1 # 0 = Straight line, 1 = Manhattan Navigation, 2 = Move to AprilTag, 3 = Move to landmark
 estimated_position = [0.0, 0.0, 0.0]

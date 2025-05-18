@@ -11,7 +11,7 @@ if __name__ == '__main__':
     control_thread.start()
 
     navigation_thread = threading.Thread(target=navigate, daemon=True)
-    navigation_thread.start()
+    #navigation_thread.start()
 
     try:
         while True:
