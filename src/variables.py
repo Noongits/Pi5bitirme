@@ -1,6 +1,10 @@
 import numpy as np
 import threading
 
+
+
+LR_TOTAL_DISTANCE = 0.0
+RF_TOTAL_DISTANCE = 0.0
 detected_tags = []
 APRILTAG_COORDS = {
     0: np.array([0.0, 0.0, 0.0]),
