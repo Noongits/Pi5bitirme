@@ -71,9 +71,9 @@ def gen_frames(target_size=(320, 240), jpeg_quality=70):
     while True:
         frame = None
         # non-blocking lock check
-        if variables.lock.acquire(blocking=False):
-            frame = variables.currentframe
-            variables.lock.release()
+        if variables.leftlock.acquire(blocking=False):
+            frame = variables.leftcam
+            variables.leftlock.release()
 
         if frame is None:
             continue
@@ -122,7 +122,7 @@ def gen_framesbos():
 def video_feed():
     # Streams the video frames to the client
     print("video feed istegi")
-    if variables.currentframe is None:
+    if variables.leftcam is None:
         return Response(gen_framesbos(), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
         return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -168,6 +168,11 @@ def get_positions():
         "y": 0,
         "z": variables.estimated_position[1]
     }
+    sensor = {
+        "x": variables.car_pose_tyresensor[0],
+        "y": 0,
+        "z": variables.car_pose_tyresensor[1]
+    }
     imu = {
         "x": variables.estimated_position[0],
         "y": 0,
@@ -178,6 +183,7 @@ def get_positions():
         "timestamp": timestamp,
         "aprilTagPosition": april_tag,
         "imuPosition": imu,
+        "sensorPosition": sensor,
         "tag_0": tag0,
         "tag_1": tag1,
         "tag_2": tag2,
@@ -193,6 +199,6 @@ def run_control_server():
     Starts the Flask control server. In a finally block, ensures that GPIO pins are cleaned up.
     """
     try:
-        app.run(host='0.0.0.0', debug=False, use_reloader=False)
+        app.run(host='0.0.0.0', debug=True, use_reloader=False)
     finally:
         GPIO.cleanup()

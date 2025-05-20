@@ -43,9 +43,9 @@ def main():
 
     while True:
         # Capture latest frame under lock
-        if variables.lock.acquire(blocking=True):
-            frame = variables.currentframe
-            variables.lock.release()
+        if variables.leftlock.acquire(blocking=True):
+            frame = variables.leftcam
+            variables.leftlock.release()
 
         if frame is not None:
             # Run YOLO inference

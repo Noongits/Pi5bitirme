@@ -14,11 +14,14 @@ APRILTAG_COORDS = {
     8: np.array([0.0, 0.0, 4.0])}
 
 nav_mode = 1 # 0 = Straight line, 1 = Manhattan Navigation, 2 = Move to AprilTag, 3 = Move to landmark
+nav_do_not_move = 1
 estimated_position = [0.0, 0.0, 0.0]
 car_pose = np.array([0.0, 0.0, 0.0])  # x, y, theta
+car_pose_tyresensor = np.array([0.0, 0.0, 0.0])  # x, y, theta
 tagarray = np.zeros((16, 3), dtype=float)
 destination_reached = False
 destination = [15.7, 12.3]
+canstop = None
 
 road_network = None
 roadnet_height, roadnet_width = 20, 20
@@ -32,5 +35,10 @@ currentlyLeft = False
 
 calibrated = True
 
-currentframe = None
-lock = threading.Lock()
+leftcam = None
+rightcam = None
+leftlock = threading.Lock()
+rightlock = threading.Lock()
+eiffel_left = None
+eiffel_right = None
+cropped_eiffel = None

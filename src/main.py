@@ -4,7 +4,7 @@ from web import run_control_server
 from apriltag_detection import *
 from localisation import *
 from yolotestonlycam import *
-from navigation import *
+from navigation2 import *
 import sensortest
 import time
 

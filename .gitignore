@@ -37,3 +37,8 @@ ehthumbs.db
 Thumbs.db
 
 __pycache__/
+venv/
+*.pt
+images/
+labels/
+sysvenv/

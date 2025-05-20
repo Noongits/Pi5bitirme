@@ -71,9 +71,9 @@ def detect_apriltag():
 
         # --- CAMERA 1 ---
         frame = picam2.capture_array()
-        if variables.lock.acquire(blocking=False):
-            variables.currentframe = frame
-            variables.lock.release()
+        if variables.leftlock.acquire(blocking=False):
+            variables.leftcam = frame
+            variables.leftlock.release()
         
         frame = cv2.rotate(frame, cv2.ROTATE_180)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -95,6 +95,10 @@ def detect_apriltag():
 
         # --- CAMERA 2 ---
         frame2 = picam2num2.capture_array()
+        if variables.rightlock.acquire(blocking=False):
+            variables.rightcam = frame
+            variables.rightlock.release()
+            
         frame2 = cv2.rotate(frame2, cv2.ROTATE_180)
         gray2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
         results2 = detector.detect(gray2)
@@ -115,8 +119,9 @@ def detect_apriltag():
         variables.detected_tags = [tid for tid in variables.APRILTAG_COORDS if np.any(tagarray[tid] != 0)]
         if not variables.detected_tags:
             #print("No known tags detected.")
-            stop_motors()
-            continue
+            if not variables.currentlyLeft:
+                stop_motors()
+                continue
 
         # FPS print
         frame_count += 1
