@@ -39,6 +39,10 @@ Thumbs.db
 __pycache__/
 venv/
 *.pt
+*.pth
 images/
 labels/
 sysvenv/
+bestbest.torchscript
+models/
+.lgd-nfy0

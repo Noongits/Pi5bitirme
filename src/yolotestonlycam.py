@@ -34,7 +34,7 @@ os.makedirs(LBL_DIR, exist_ok=True)
 # --- Setup camera with 3-channel RGB output ---
 
 # --- Load YOLO model ---
-model = YOLO("bestbest_ncnn_model")  # update path to your .pt file
+model = YOLO("models/bestbest_ncnn_model")  # update path to your .pt file
 
 # --- Main loop ---
 def main():

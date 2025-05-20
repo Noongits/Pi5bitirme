@@ -35,10 +35,17 @@ currentlyLeft = False
 
 calibrated = True
 
+left_frame_imm = None
+right_frame_imm = None
+tag_frame_left = None
+tag_frame_right = None
 leftcam = None
 rightcam = None
 leftlock = threading.Lock()
 rightlock = threading.Lock()
+
 eiffel_left = None
 eiffel_right = None
 cropped_eiffel = None
+eiffel_angle = None
+eiffel_distance = None

@@ -1,6 +1,5 @@
 import cv2
 import apriltag
-from picamera2 import Picamera2
 import signal
 import sys
 import numpy as np
@@ -33,18 +32,6 @@ object_points = np.array([
     [-half_size, -half_size, 0]
 ], dtype=np.float32)
 
-# Setup cameras
-picam2 = Picamera2(camera_num=0)
-picam2num2 = Picamera2(camera_num=1)
-preview_config1 = picam2.create_preview_configuration(main={"size": (1280, 960)})
-preview_config2 = picam2num2.create_preview_configuration(main={"size": (1280, 960)})
-picam2.configure(preview_config1)
-picam2num2.configure(preview_config2)
-picam2.set_controls({"FrameRate": 30})
-picam2num2.set_controls({"FrameRate": 30})
-picam2.start()
-picam2num2.start()
-
 # Detector
 detector = apriltag.Detector(apriltag.DetectorOptions(families='tag25h9'))
 
@@ -52,8 +39,6 @@ detector = apriltag.Detector(apriltag.DetectorOptions(families='tag25h9'))
 def signal_handler(sig, frame):
     print("Exiting...")
     stop_motors()
-    picam2.stop()
-    picam2num2.stop()
     sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
@@ -70,13 +55,8 @@ def detect_apriltag():
         tagarray = np.zeros((16, 3), dtype=float)
 
         # --- CAMERA 1 ---
-        frame = picam2.capture_array()
-        if variables.leftlock.acquire(blocking=False):
-            variables.leftcam = frame
-            variables.leftlock.release()
-        
-        frame = cv2.rotate(frame, cv2.ROTATE_180)
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        variables.tag_frame_left = cv2.rotate(variables.left_frame_imm, cv2.ROTATE_180)
+        gray = cv2.cvtColor(variables.tag_frame_left, cv2.COLOR_BGR2GRAY)
         results = detector.detect(gray)
 
         for r in results:
@@ -94,13 +74,8 @@ def detect_apriltag():
                     tagarray[idx, :] = vec
 
         # --- CAMERA 2 ---
-        frame2 = picam2num2.capture_array()
-        if variables.rightlock.acquire(blocking=False):
-            variables.rightcam = frame
-            variables.rightlock.release()
-            
-        frame2 = cv2.rotate(frame2, cv2.ROTATE_180)
-        gray2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+        variables.tag_frame_right = cv2.rotate(variables.right_frame_imm, cv2.ROTATE_180)
+        gray2 = cv2.cvtColor(variables.tag_frame_right, cv2.COLOR_BGR2GRAY)
         results2 = detector.detect(gray2)
 
         for r in results2:

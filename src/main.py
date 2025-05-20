@@ -7,16 +7,20 @@ from yolotestonlycam import *
 from navigation2 import *
 import sensortest
 import time
+from get_frames import *
 
 if __name__ == '__main__':
     control_thread = threading.Thread(target=run_control_server, daemon=True)
     control_thread.start()
 
-    yolo_thread = threading.Thread(target=main, daemon=True)
-    yolo_thread.start()
+    # yolo_thread = threading.Thread(target=main, daemon=True)
+    # yolo_thread.start()
 
     navigation_thread = threading.Thread(target=navigate, daemon=True)
     navigation_thread.start()
+    
+    camera_thread = threading.Thread(target=capture_frames, daemon=True)
+    camera_thread.start()
 
     sensor_thread = threading.Thread(
         target=sensortest.run_sensor_test,
@@ -24,10 +28,10 @@ if __name__ == '__main__':
     )
     sensor_thread.start()
 
-
     try:
         while True:
             time.sleep(1)
+            
     except KeyboardInterrupt:
         stop_motors()
         print("Exiting main program.")
