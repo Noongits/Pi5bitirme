@@ -25,7 +25,7 @@ class StereoDistanceCalculator:
         self.sensor_width_cam2_mm = sensor_width_cam2_mm
         
         # Load YOLO model
-        self.model = YOLO('bestbest_ncnn_model')
+        self.model = YOLO('src/models/bestbest_ncnn_model')
         
         # Camera parameters for Raspberry Pi Camera v2
         # Resolution is typically 3280x2464 for Raspberry Pi Camera v2

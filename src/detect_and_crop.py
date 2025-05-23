@@ -5,7 +5,7 @@ from pathlib import Path
 import variables
 
 # Paths
-model_path = 'models/bestbest_ncnn_model'
+model_path = 'src/models/bestbest_ncnn_model'
 
 # Load YOLO model
 model = YOLO(model_path, task='detect')

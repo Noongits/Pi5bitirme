@@ -47,5 +47,7 @@ rightlock = threading.Lock()
 eiffel_left = None
 eiffel_right = None
 cropped_eiffel = None
+
+eiffel_location = [2.0, 0.0, 4.0]
 eiffel_angle = None
 eiffel_distance = None

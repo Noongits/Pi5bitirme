@@ -12,8 +12,8 @@ classes = ['0', '15', '30', '45', '60', '75', '105', '120', '150', '165']
 
 # List of models to evaluate
 MODEL_PATHS = [
-    "models/angle_detection/angle_classifier.pth",
-    "models/angle_detection/angle_classifier_meh1.pth"
+    "src/models/angle_classifier_good1.pth",
+    "src/models/angle_classifier_good2.pth"
 ]
 
 def load_model(model_path):
