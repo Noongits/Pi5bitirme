@@ -1,8 +1,6 @@
 import numpy as np
 import threading
 
-
-
 LR_TOTAL_DISTANCE = 0.0
 RF_TOTAL_DISTANCE = 0.0
 detected_tags = []
@@ -44,9 +42,14 @@ rightcam = None
 leftlock = threading.Lock()
 rightlock = threading.Lock()
 
-eiffel_left = None
-eiffel_right = None
-cropped_eiffel = None
+# Image paths for Eiffel Tower detection
+eiffel_left = 'dataset/left_detection.jpg'
+eiffel_right = 'dataset/right_detection.jpg'
+cropped_eiffel = 'dataset/eiffel_cropped.jpg'
+
+# Detection boxes for stereo distance calculation
+left_box = None
+right_box = None
 
 eiffel_location = [2.0, 0.0, 4.0]
 eiffel_angle = None

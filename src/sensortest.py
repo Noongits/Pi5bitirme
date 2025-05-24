@@ -52,7 +52,7 @@ class SensorTest:
                 for pin, label in self.sensor_pins.items():
                     count = self.pulse_counts[pin]
                     revolutions = count / self.pulses_per_rev
-                    distance = revolutions * self.dist_per_rev_m
+                    distance = revolutions * (self.dist_per_rev_m /20)
                     if distance > 0:
                         self.total_distances[pin] += distance
                         if pin == 22:

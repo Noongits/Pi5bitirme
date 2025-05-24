@@ -164,19 +164,19 @@ def get_positions():
     }
 
     april_tag = {
-        "x": variables.estimated_position[0],
+        "x": variables.car_pose[0],
         "y": 0,
-        "z": variables.estimated_position[1]
+        "z": variables.car_pose[2]
     }
     sensor = {
         "x": variables.car_pose_tyresensor[0],
         "y": 0,
-        "z": variables.car_pose_tyresensor[1]
+        "z": variables.car_pose_tyresensor[2]
     }
     imu = {
         "x": variables.estimated_position[0],
         "y": 0,
-        "z": variables.estimated_position[1]
+        "z": variables.estimated_position[2]
     }
     
     return jsonify({
@@ -184,6 +184,7 @@ def get_positions():
         "aprilTagPosition": april_tag,
         "imuPosition": imu,
         "sensorPosition": sensor,
+        "direction": variables.current_direction,
         "tag_0": tag0,
         "tag_1": tag1,
         "tag_2": tag2,

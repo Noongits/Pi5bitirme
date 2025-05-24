@@ -53,7 +53,7 @@ def navigate():
                 print("get closer")
                 variables.canstop = True
                 move_forward()
-                time.sleep(0.1)
+                time.sleep(0.01)
 
             print("close enough")
             if variables.canstop == True:
@@ -88,7 +88,7 @@ def navigate():
                 print("MOVE_FORWARD")
                 variables.canstop = True
                 move_forward()
-                time.sleep(0.1)
+                time.sleep(0.01)
             print("close enough")
 
             

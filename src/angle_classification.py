@@ -12,11 +12,18 @@ classes = ['0', '15', '30', '45', '60', '75', '105', '120', '150', '165']
 
 # List of models to evaluate
 MODEL_PATHS = [
-    "src/models/angle_classifier_good1.pth",
-    "src/models/angle_classifier_good2.pth"
+    "models/angle_classifier_good1.pth",
+    "models/angle_classifier_good2.pth"
 ]
 
+# Global cache for loaded models
+model_cache = {}
+
 def load_model(model_path):
+    # Check if model is already in cache
+    if model_path in model_cache:
+        return model_cache[model_path]
+        
     # Load pretrained ResNet18 and modify for our classes
     model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
     num_ftrs = model.fc.in_features
@@ -38,10 +45,18 @@ def load_model(model_path):
             model.load_state_dict(checkpoint)
     
     model.eval()
+    
+    # Store in cache
+    model_cache[model_path] = model
     return model
 
+def initialize_models():
+    if model_cache == {}:
+        for model_path in MODEL_PATHS:
+            load_model(model_path)
+        print("All models loaded and cached")
 
-def predict_frame(frame, model):
+def predict_frame(frame, model, confidence_threshold=50.0):
     # Prepare the image
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
@@ -71,23 +86,30 @@ def predict_frame(frame, model):
     predicted_class = classes[predicted.item()]
     confidence = probabilities[predicted].item() * 100
     
+    # Return None if confidence is below threshold
+    if confidence < confidence_threshold:
+        return None, confidence
+        
     return predicted_class, confidence
 
-def process_frame_with_models(model_paths, frame):
+def process_frame_with_models(model_paths, frame, confidence_threshold=50.0):
     results = {}
     
     # Process each model
     for model_path in model_paths:
-        print(f"\nProcessing model: {model_path}")
+        # Get model from cache (will be loaded if not cached)
         model = load_model(model_path)
         
         try:
-            predicted_class, confidence = predict_frame(frame, model)
-            results[model_path] = f"{predicted_class} deg ({confidence:.2f}%)"
-            variables.eiffel_angle = predicted_class
-            print(f"Prediction: {predicted_class} deg ({confidence:.2f}%)")
+            predicted_class, confidence = predict_frame(frame, model, confidence_threshold)
+            if predicted_class is None:
+                results[model_path] = f"Low confidence ({confidence:.2f}%)"
+                variables.eiffel_angle = None
+            else:
+                results[model_path] = f"{predicted_class} deg ({confidence:.2f}%)"
+                variables.eiffel_angle = float(predicted_class)
         except Exception as e:
-            print(f"Error processing frame: {str(e)}")
+            print(f"Error in process_frame_with_models(): {str(e)}")
             results[model_path] = "Error"
     
     return results
@@ -111,11 +133,26 @@ def save_results_to_csv(results, output_file="prediction_results.csv"):
     print(f"\nResults saved to {output_file}")
 
 def main():
-    # Process frame with all models
-    results = process_frame_with_models(MODEL_PATHS, variables.cropped_eiffel)
+    # Initialize all models at startup
+    initialize_models()
     
-    # Save results to CSV
-    # save_results_to_csv(results)
+    try:
+        # Load the image from file path
+        if variables.cropped_eiffel is not None:
+            try:
+                image = Image.open(variables.cropped_eiffel)
+                results = process_frame_with_models(MODEL_PATHS, image)
+                print(results)
+            except Exception as e:
+                print(f"Error loading image from {variables.cropped_eiffel}: {str(e)}")
+        else:
+            print("No cropped Eiffel Tower image available")
+
+    except Exception as e:
+        print(f"Error in angle_classification.main(): {str(e)}")
+
+# Call initialize_models() when the module is imported
+initialize_models()
 
 # if __name__ == '__main__':
 #     main()

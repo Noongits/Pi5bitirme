@@ -2,11 +2,12 @@ from picamera2 import Picamera2
 import variables
 import signal
 import sys
+import time
 
 picam1 = Picamera2(camera_num=0)
 picam2 = Picamera2(camera_num=1)
-preview_config1 = picam1.create_preview_configuration(main={"size": (1280, 960)})
-preview_config2 = picam2.create_preview_configuration(main={"size": (1280, 960)})
+preview_config1 = picam1.create_preview_configuration(main={"format": "RGB888", "size": (1280, 960)})
+preview_config2 = picam2.create_preview_configuration(main={"format": "RGB888", "size": (1280, 960)})
 picam1.configure(preview_config1)
 picam2.configure(preview_config2)
 picam1.set_controls({"FrameRate": 30})

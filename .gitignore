@@ -46,3 +46,4 @@ sysvenv/
 bestbest.torchscript
 models/
 .lgd-nfy0
+*.jpg

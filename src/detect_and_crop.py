@@ -3,16 +3,16 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 from pathlib import Path
 import variables
+import logging
 
-# Paths
-model_path = 'src/models/bestbest_ncnn_model'
+logging.getLogger("ultralytics").setLevel(logging.WARNING)
 
-# Load YOLO model
-model = YOLO(model_path, task='detect')
-model.conf = 0.75  # Confidence threshold
+model_path = 'models/bestbest_ncnn_model'
+
+model = YOLO(model_path, task='detect', verbose=False)
+model.conf = 0.75
 
 def draw_boxes(image_array, boxes):
-    """Draw bounding boxes on the image using PIL."""
     # Convert numpy array to PIL Image
     image = Image.fromarray(image_array)
     draw = ImageDraw.Draw(image)
@@ -46,16 +46,20 @@ def process_frames(left_image, right_image):
             print("Left image must be a numpy array")
             return
 
+        left_image = np.rot90(left_image, k=2)  # k=2 means rotate 180 degrees
         left_results = model(left_image)
         left_boxes = left_results[0].boxes
         
         if not left_boxes:
             print("No detections for left image")
+            variables.left_box = None
+            variables.right_box = None
             return
 
         # Find box with highest confidence for left image
         best_left_box = max(left_boxes, key=lambda b: b.conf[0].item())
         x1, y1, x2, y2 = map(int, best_left_box.xyxy[0].tolist())
+        variables.left_box = (x1, y1, x2, y2)
         
         # Crop left image using numpy slicing
         left_crop = left_image[y1:y2, x1:x2]
@@ -66,15 +70,26 @@ def process_frames(left_image, right_image):
         # Process right image (assuming it's already a numpy array)
         if not isinstance(right_image, np.ndarray):
             print("Right image must be a numpy array")
+            variables.left_box = None
+            variables.right_box = None
             return
 
+        # Rotate right image 180 degrees
+        right_image = np.rot90(right_image, k=2)
         right_results = model(right_image)
         right_boxes = right_results[0].boxes
         
         if not right_boxes:
             print("No detections for right image")
+            variables.left_box = None
+            variables.right_box = None
             return
 
+        # Find box with highest confidence for right image
+        best_right_box = max(right_boxes, key=lambda b: b.conf[0].item())
+        x1, y1, x2, y2 = map(int, best_right_box.xyxy[0].tolist())
+        variables.right_box = (x1, y1, x2, y2)
+        
         # Draw boxes on right image
         right_annotated = draw_boxes(right_image, right_boxes)
         
@@ -83,13 +98,11 @@ def process_frames(left_image, right_image):
         Image.fromarray(left_annotated).save(variables.eiffel_left)
         Image.fromarray(right_annotated).save(variables.eiffel_right)
         
-        print("Successfully processed and saved all images")
         return
         
     except Exception as e:
-        print(f"Error processing images: {str(e)}")
+        print(f"Error in detect_and_crop.process_frames(): {str(e)}")
+        variables.left_box = None
+        variables.right_box = None
         return
 
-# # Process both frames
-# print("Processing left and right frames...")
-# process_frames(variables.leftcam, variables.rightcam) 

@@ -20,7 +20,6 @@ def localise_with_eiffel():
                 time.sleep(0.1)
                 continue
 
-            # Process frames to detect Eiffel Tower
             detect_and_crop.process_frames(variables.leftcam, variables.rightcam)
             
             # Only proceed with angle and distance if we have a valid crop
@@ -50,13 +49,13 @@ def localise_with_eiffel():
                     
                     # Calculate the camera's position by subtracting the offsets from the Eiffel Tower location
                     camera_x = eiffel_loc[0] - x_offset
-                    camera_y = eiffel_loc[1] - y_offset
-                    camera_z = eiffel_loc[2]  # Assuming same height as Eiffel Tower for now
+                    camera_y = eiffel_loc[1]  # Assuming same height as Eiffel Tower for now
+                    camera_z = eiffel_loc[2] - y_offset
                     
                     # Update the car's pose with the calculated position
-                    variables.car_pose = np.array([camera_x, camera_y, angle])
+                    variables.car_pose = np.array([camera_x, camera_z, angle])
                     
-                    print(f"Camera position calculated: x={camera_x:.2f}, y={camera_y:.2f}, angle={angle:.2f}")
+                    print(f"Vehicle position calculated: x={camera_x:.2f}, y={camera_z:.2f}, angle={angle:.2f}")
                 else:
                     print("Warning: Could not localize - missing angle or distance measurements")
             else:
@@ -64,7 +63,7 @@ def localise_with_eiffel():
                 time.sleep(0.1)
 
         except Exception as e:
-            print(f"Error in localization loop: {str(e)}")
+            print(f"Error in localise_with_eiffel(): {str(e)}")
             time.sleep(0.1)
 
 if __name__ == "__main__":
