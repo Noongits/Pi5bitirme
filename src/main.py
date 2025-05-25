@@ -9,14 +9,11 @@ import sensortest
 import time
 from get_frames import *
 from sensor import *
-# from localisation_eiffel import *
+from localisation_eiffel import *
 
 if __name__ == '__main__':
     control_thread = threading.Thread(target=run_control_server, daemon=True)
     control_thread.start()
-
-    # yolo_thread = threading.Thread(target=main, daemon=True)
-    # yolo_thread.start()
 
     sensor_thread_mpu6050 = threading.Thread(target=sensor_loop, daemon=True)
     sensor_thread_mpu6050.start()
@@ -30,8 +27,8 @@ if __name__ == '__main__':
     sensor_thread = threading.Thread(target=sensortest.run_sensor_test, daemon=True)
     sensor_thread.start()
 
-    # eiffel_thread = threading.Thread(target=localise_with_eiffel, daemon=True)
-    # eiffel_thread.start()
+    eiffel_thread = threading.Thread(target=localise_with_eiffel, daemon=True)
+    eiffel_thread.start()
 
     try:
         while True:

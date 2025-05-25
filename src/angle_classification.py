@@ -142,7 +142,7 @@ def main():
             try:
                 image = Image.open(variables.cropped_eiffel)
                 results = process_frame_with_models(MODEL_PATHS, image)
-                print(results)
+                # print(results)
             except Exception as e:
                 print(f"Error loading image from {variables.cropped_eiffel}: {str(e)}")
         else:
