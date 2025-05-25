@@ -7,13 +7,14 @@ detected_tags = []
 APRILTAG_COORDS = {
     0: np.array([0.0, 0.0, 0.0]),
     2: np.array([0.0, 0.0, 2.0]),
-    3: np.array([-3.0, -3.0, -3.0]),
+    3: np.array([-3, 0, 1]),
     6: np.array([-2.0, 0.0, 3.0]),
     8: np.array([0.0, 0.0, 4.0])}
 
 nav_mode = 1 # 0 = Straight line, 1 = Manhattan Navigation, 2 = Move to AprilTag, 3 = Move to landmark
 nav_do_not_move = 1
 estimated_position = [0.0, 0.0, 0.0]
+estimated_orientation = [0.0, 0.0, 0.0]
 car_pose = np.array([0.0, 0.0, 0.0])  # x, y, theta
 car_pose_tyresensor = np.array([0.0, 0.0, 0.0])  # x, y, theta
 tagarray = np.zeros((16, 3), dtype=float)

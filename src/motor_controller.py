@@ -114,9 +114,11 @@ def move_backward(duration=1):
     variables.currentlyBackward = False
     stop_motors()
 
-def turn_left(duration=1.5):
-    FRONT_left_motor_stop()
-    BACK_left_motor_stop()
+def turn_left(duration=0.75):
+    #FRONT_left_motor_stop()
+    #BACK_left_motor_stop()
+    BACK_left_motor_backward()
+    FRONT_left_motor_backward()
     FRONT_right_motor_forward()
     BACK_right_motor_forward()
     variables.currentlyLeft = True
@@ -124,11 +126,86 @@ def turn_left(duration=1.5):
     variables.currentlyLeft = False
     stop_motors()
 
-def turn_right(duration=1.5):
+import time
+def turn_deg(degree=90, timeout=5.0, second_turn=False):
+    # 1) record the true start and build a raw target
+    start  = variables.current_direction      # e.g. –1 stays –1
+    target = start + degree                   # e.g. –1 + 10 → 9
+    tolerance = abs(degree) * 0.1             # 10% of the turn
+
+    # 2) kick off the motors
+    if degree > 0:
+        # turn left
+        BACK_left_motor_backward()
+        FRONT_left_motor_backward()
+        FRONT_right_motor_forward()
+        BACK_right_motor_forward()
+        variables.currentlyLeft = True
+    else:
+        # turn right
+        BACK_left_motor_forward()
+        FRONT_left_motor_forward()
+        FRONT_right_motor_backward()
+        BACK_right_motor_backward()
+        variables.currentlyRight = True
+
+    start_time = time.monotonic()
+    error = target - variables.current_direction
+
+    # 3) loop until within tolerance, overshoot, or timeout
+    while True:
+        current = variables.current_direction
+        error   = target - current
+
+        # a) are we close enough?
+        if abs(error) <= tolerance:
+            reason = "within tolerance"
+            break
+
+        # b) did we go past it?
+        if degree > 0 and current >= target:
+            reason = "overshoot detected"
+            break
+        if degree < 0 and current <= target:
+            reason = "overshoot detected"
+            break
+
+        # c) timeout
+        if time.monotonic() - start_time >= timeout:
+            reason = "timeout"
+            break
+
+        time.sleep(0.01)
+
+    # 4) stop and clear flags
+    stop_motors()
+    variables.currentlyLeft = variables.currentlyRight = False
+
+    # 5) diagnostics
+    print(f"Exit reason: {reason}")
+    print(f"  start   : {start:.2f}°")
+    print(f"  target  : {target:.2f}°")
+    print(f"  current : {variables.current_direction:.2f}°  (error {error:.2f}°)")
+    print(f"  tolerance: {tolerance:.2f}°, timeout: {timeout}s")
+
+    time.sleep(1)
+    # 6) small correction pass if still way off
+    if abs(error) > 4 and not second_turn:
+        print(f"DUZELTME GELDI°")
+        correction = target - variables.current_direction
+        print(f"Performing correction turn of {correction:.2f}°")
+        turn_deg(correction, timeout, True)
+
+  
+
+
+def turn_right(duration=0.75):
     FRONT_left_motor_forward()
     BACK_left_motor_forward()
-    FRONT_right_motor_stop()
-    BACK_right_motor_stop()
+    #FRONT_right_motor_stop()
+    #BACK_right_motor_stop()
+    BACK_right_motor_backward()
+    FRONT_right_motor_backward()
     variables.currentlyRight = True
     time.sleep(duration)
     variables.currentlyRight = False

@@ -1,7 +1,7 @@
 import manhattan_navigation
 from motor_controller import *
 from apriltag_detection import *
-from localisation import *
+from localisation2 import *
 import simulate_road_network
 import variables
 import threading
@@ -43,10 +43,10 @@ def navigate():
             print("XXXXXXXXXX")
             if closest_point[0] > 0:
                 turn_right()
-                variables.current_direction = measure_angle(variables.current_direction + 90)
+                #variables.current_direction = measure_angle(variables.current_direction + 90)
             elif closest_point[0] < 0:
                 turn_left()
-                variables.current_direction = measure_angle(variables.current_direction - 90)
+                #variables.current_direction = measure_angle(variables.current_direction - 90)
             while abs(closest_point[0] - variables.car_pose[0]):
                 print(variables.car_pose)
                 print(closest_point)
@@ -62,16 +62,16 @@ def navigate():
 
             if closest_point[1] > 0 and variables.current_direction == 90: # +y / +90
                 turn_left()
-                variables.current_direction = measure_angle(variables.current_direction - 90)
+                #variables.current_direction = measure_angle(variables.current_direction - 90)
             elif closest_point[1] < 0 and variables.current_direction == 90: # -y / +90
                 turn_right()
-                variables.current_direction = measure_angle(variables.current_direction + 90)
+                #variables.current_direction = measure_angle(variables.current_direction + 90)
             elif closest_point[1] > 0 and variables.current_direction == -90: # +y / -90
                 turn_right()
-                variables.current_direction = measure_angle(variables.current_direction + 90)
+                #variables.current_direction = measure_angle(variables.current_direction + 90)
             elif closest_point[1] < 0 and variables.current_direction == -90: # -y / -90
                 turn_left()
-                variables.current_direction = measure_angle(variables.current_direction - 90)
+                #variables.current_direction = measure_angle(variables.current_direction - 90)
             while abs(variables.car_pose[1]) < abs(closest_point[1]):
                 move_forward()
 
@@ -97,21 +97,21 @@ def navigate():
                 print("stop motors Z")
                 variables.canstop = False
 
-            if closest_point[0] < 0 and variables.current_direction == 0: # +x / 0
+            if closest_point[0] < 0 and abs(variables.current_direction) < 5: # +x / 0
                 print("turn left")
-                turn_left()
-                variables.current_direction = measure_angle(variables.current_direction - 90)
-            elif closest_point[0] > 0 and variables.current_direction == 0: # -x / 0
+                turn_deg(90)
+                #variables.current_direction = measure_angle(variables.current_direction - 90)
+            elif closest_point[0] > 0 and  abs(variables.current_direction) < 5: # -x / 0
                 print("turn right")
                 turn_right()
-                variables.current_direction = measure_angle(variables.current_direction + 90)
-            elif closest_point[0] < 0 and variables.current_direction == 180: # +x / 180
+                #variables.current_direction = measure_angle(variables.current_direction + 90)
+            elif closest_point[0] < 0 and  variables.current_direction > 175 and variables.current_direction < 185: # +x / 180
                 turn_right()
-                variables.current_direction = measure_angle(variables.current_direction + 90)
-            elif closest_point[0] > 0 and variables.current_direction == 180: # -x / 180
+                #variables.current_direction = measure_angle(variables.current_direction + 90)
+            elif closest_point[0] > 0 and variables.current_direction > 175 and variables.current_direction < 185: # -x / 180
                 print("turn left 2")
                 turn_left()
-                variables.current_direction = measure_angle(variables.current_direction - 90)
+                #variables.current_direction = measure_angle(variables.current_direction - 90)
             while abs(closest_point[1] - variables.car_pose[2]) > TOL:
                 move_forward()
         

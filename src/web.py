@@ -45,12 +45,12 @@ def backward():
 
 @app.route('/left')
 def left():
-    turn_left()
+    turn_deg(90)
     return redirect(url_for('index'))
 
 @app.route('/right')
 def right():
-    turn_right(0.5)
+    turn_deg(-90)
     return redirect(url_for('index'))
 
 @app.route('/stop')

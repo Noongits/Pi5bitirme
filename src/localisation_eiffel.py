@@ -9,9 +9,6 @@ import threading
 from get_frames import *
 
 def localise_with_eiffel():
-    camera_thread = threading.Thread(target=capture_frames, daemon=True)
-    camera_thread.start()
-
     while True:
         try:
             # Check if we have valid frames
@@ -23,7 +20,7 @@ def localise_with_eiffel():
             detect_and_crop.process_frames(variables.leftcam, variables.rightcam)
             
             # Only proceed with angle and distance if we have a valid crop
-            if variables.cropped_eiffel is not None: # TODO: eiffel detection is not working
+            if variables.cropped_eiffel is not None:
                 angle_classification.main()
                 stereo_distance.main()
 
