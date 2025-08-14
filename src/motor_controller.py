@@ -95,26 +95,34 @@ def stop_motors():
 
 
 def move_forward(duration=1):
+    if variables.imu_calibrated == False:
+        print("IMU not calibrated")
+        return
+    print("move_forward")
     FRONT_left_motor_forward()
     FRONT_right_motor_forward()
     BACK_left_motor_forward()
     BACK_right_motor_forward()
     variables.currentlyForward = True
     time.sleep(duration)
-    variables.currentlyForward = False
     stop_motors()
+    time.sleep(0.5)
+    variables.currentlyForward = False
 
 def move_backward(duration=1):
+    print("move_backward")
     FRONT_left_motor_backward()
     FRONT_right_motor_backward()
     BACK_left_motor_backward()
     BACK_right_motor_backward()
     variables.currentlyBackward = True
     time.sleep(duration)
-    variables.currentlyBackward = False
     stop_motors()
+    time.sleep(0.5)
+    variables.currentlyBackward = False
 
 def turn_left(duration=0.75):
+    print("turn_left")
     #FRONT_left_motor_stop()
     #BACK_left_motor_stop()
     BACK_left_motor_backward()
@@ -128,6 +136,12 @@ def turn_left(duration=0.75):
 
 import time
 def turn_deg(degree=90, timeout=5.0, second_turn=False):
+    print("turn_deg")
+    
+    if variables.currentlyLeft or variables.currentlyRight or variables.imu_calibrated == False:
+        print("Already turning")
+        return
+    
     # 1) record the true start and build a raw target
     start  = variables.current_direction      # e.g. –1 stays –1
     target = start + degree                   # e.g. –1 + 10 → 9
@@ -200,6 +214,7 @@ def turn_deg(degree=90, timeout=5.0, second_turn=False):
 
 
 def turn_right(duration=0.75):
+    print("turn_right")
     FRONT_left_motor_forward()
     BACK_left_motor_forward()
     #FRONT_right_motor_stop()

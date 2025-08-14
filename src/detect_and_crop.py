@@ -46,7 +46,8 @@ def process_frames(left_image, right_image):
             print("Left image must be a numpy array")
             return
 
-        left_image = np.rot90(left_image, k=2)  # k=2 means rotate 180 degrees
+        # left_image = np.rot90(left_image, k=2)  # k=2 means rotate 180 degrees
+        # left_image = np.flip(left_image, axis=1)  # Mirror horizontally (vertically in original orientation)
         left_results = model(left_image)
         left_boxes = left_results[0].boxes
         
@@ -74,8 +75,8 @@ def process_frames(left_image, right_image):
             variables.right_box = None
             return
 
-        # Rotate right image 180 degrees
-        right_image = np.rot90(right_image, k=2)
+        # right_image = np.rot90(right_image, k=2)
+        # right_image = np.flip(right_image, axis=1)  # Mirror horizontally (vertically in original orientation)
         right_results = model(right_image)
         right_boxes = right_results[0].boxes
         

@@ -32,7 +32,9 @@ class StereoDistanceCalculator:
         
         # Calculate focal length in pixels for both cameras
         self.focal_length_cam1_pixels = focal_length_cam1_mm / self.pixel_size_cam1_mm
+        self.focal_length_cam1_pixels = 2015
         self.focal_length_cam2_pixels = focal_length_cam2_mm / self.pixel_size_cam2_mm
+        self.focal_length_cam2_pixels = 713
         
         # Use average focal length for distance calculations
         self.avg_focal_length_mm = (focal_length_cam1_mm + focal_length_cam2_mm) / 2
@@ -120,11 +122,11 @@ class StereoDistanceCalculator:
 def main():
     # Initialize calculator with Raspberry Pi camera parameters
     calculator = StereoDistanceCalculator(
-        baseline_mm=50,  # 5 cm baseline
-        focal_length_cam1_mm=2.1,  # Camera 1 focal length
-        focal_length_cam2_mm=1.3,  # Camera 2 focal length
-        sensor_width_cam1_mm=3.674,  # Camera 1 sensor width
-        sensor_width_cam2_mm=3.6  # Camera 2 sensor width
+        baseline_mm=51,  # 5 cm baseline
+        focal_length_cam1_mm=3.4,  # Camera 1 focal length
+        focal_length_cam2_mm=1.435,  # Camera 2 focal length
+        sensor_width_cam1_mm=3.6,  # Camera 1 sensor width
+        sensor_width_cam2_mm=1.858  # Camera 2 sensor width
     )
 
     try:
@@ -136,15 +138,15 @@ def main():
             results = calculator.process_images(left_box, right_box)
             variables.eiffel_distance = results['distance_meters']
             
-            if results['success']:
-                print("\nStereo Distance Measured")
+            #if results['success']:
+                #print("\nStereo Distance Measured: " + str(variables.eiffel_distance))
                 # print(f"Distance to Eiffel Tower: {results['distance_meters']:.2f} meters")
                 # print(f"Disparity: {results['disparity_pixels']:.2f} pixels")
                 # print(f"Confidence: {results['confidence']:.2%}")
                 # print("\nDetection details:")
                 # print(f"Left image center: ({results['left_detection'][0]:.1f}, {results['left_detection'][1]:.1f})")
                 # print(f"Right image center: ({results['right_detection'][0]:.1f}, {results['right_detection'][1]:.1f})")
-            else:
+            if not results['success']:
                 print(f"Error: {results['error']}")
         else:
             print("No detection boxes available from detect_and_crop")

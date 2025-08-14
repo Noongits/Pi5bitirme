@@ -55,8 +55,8 @@ def detect_apriltag():
         tagarray = np.zeros((16, 3), dtype=float)
 
         # --- CAMERA 1 ---
-        variables.tag_frame_left = cv2.rotate(variables.left_frame_imm, cv2.ROTATE_180)
-        gray = cv2.cvtColor(variables.tag_frame_left, cv2.COLOR_BGR2GRAY)
+        # variables.tag_frame_left = cv2.rotate(variables.left_frame_imm, cv2.ROTATE_180)
+        gray = cv2.cvtColor(variables.left_frame_imm, cv2.COLOR_BGR2GRAY)
         results = detector.detect(gray)
 
         for r in results:
@@ -65,7 +65,6 @@ def detect_apriltag():
             if retval:
                 idx = int(r.tag_id)
                 if idx > 15:
-                    print("contuniued")
                     continue
                 vec = tvec.ravel()
                 if np.any(tagarray[idx, :] != 0):
@@ -74,8 +73,8 @@ def detect_apriltag():
                     tagarray[idx, :] = vec
 
         # --- CAMERA 2 ---
-        variables.tag_frame_right = cv2.rotate(variables.right_frame_imm, cv2.ROTATE_180)
-        gray2 = cv2.cvtColor(variables.tag_frame_right, cv2.COLOR_BGR2GRAY)
+        # variables.tag_frame_right = cv2.rotate(variables.right_frame_imm, cv2.ROTATE_180)
+        gray2 = cv2.cvtColor(variables.right_frame_imm, cv2.COLOR_BGR2GRAY)
         results2 = detector.detect(gray2)
 
         for r in results2:
@@ -92,11 +91,6 @@ def detect_apriltag():
         variables.tagarray = tagarray
 
         variables.detected_tags = [tid for tid in variables.APRILTAG_COORDS if np.any(tagarray[tid] != 0)]
-        if not variables.detected_tags:
-            #print("No known tags detected.")
-            if not variables.currentlyLeft:
-                stop_motors()
-                continue
 
         # FPS print
         frame_count += 1

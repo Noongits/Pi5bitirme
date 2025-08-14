@@ -9,6 +9,7 @@ import io
 import variables
 import cv2
 from PIL import Image
+import logging
 
 frame_lock = threading.Lock()
 
@@ -45,12 +46,12 @@ def backward():
 
 @app.route('/left')
 def left():
-    turn_deg(90)
+    turn_deg(45)
     return redirect(url_for('index'))
 
 @app.route('/right')
 def right():
-    turn_deg(-90)
+    turn_deg(-45)
     return redirect(url_for('index'))
 
 @app.route('/stop')
@@ -81,11 +82,6 @@ def gen_frames(target_size=(320, 240), jpeg_quality=70):
         # 1) Convert numpy array to PIL Image
         img = Image.fromarray(frame).convert("RGB")
 
-        # 2) Flip horizontally
-        #img = img.transpose(Image.FLIP_LEFT_RIGHT)
-        # If you prefer a vertical flip instead, use:
-        img = img.transpose(Image.FLIP_TOP_BOTTOM)
-
         # 3) Downscale to target_size using high-quality resampling
         img = img.resize(target_size, Image.ANTIALIAS)
 
@@ -102,7 +98,7 @@ def gen_frames(target_size=(320, 240), jpeg_quality=70):
 def gen_framesbos():
     """
     Generator that yields a pre-encoded white JPEG frame forever,
-    so you don’t re-encode on each iteration.
+    so you don't re-encode on each iteration.
     """
     width, height = 320, 240
     # create a white PIL image once
@@ -121,7 +117,7 @@ def gen_framesbos():
 @app.route('/video_feed')
 def video_feed():
     # Streams the video frames to the client
-    print("video feed istegi")
+    #print("video feed istegi")
     if variables.leftcam is None:
         return Response(gen_framesbos(), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
@@ -133,19 +129,19 @@ def get_positions():
     
     timestamp = datetime.now().isoformat()
     tag0 = {
-        "x": variables.tagarray[0, 0],
-        "y": variables.tagarray[0, 1],
-        "z": variables.tagarray[0, 2]
+        "x": -variables.APRILTAG_COORDS[0][0],
+        "y": variables.APRILTAG_COORDS[0][1],
+        "z": variables.APRILTAG_COORDS[0][2]
     }
     tag1 = {
-        "x": variables.tagarray[1, 0],
+        "x": -variables.tagarray[1, 0],
         "y": variables.tagarray[1, 1],
         "z": variables.tagarray[1, 2]
     }
     tag2 = {
-        "x": variables.tagarray[2, 0],
-        "y": variables.tagarray[2, 1],
-        "z": variables.tagarray[2, 2]
+        "x": -variables.APRILTAG_COORDS[2][0],
+        "y": variables.APRILTAG_COORDS[2][1],
+        "z": variables.APRILTAG_COORDS[2][2]
     }
     tag3 = {
         "x": variables.tagarray[3, 0],
@@ -158,23 +154,23 @@ def get_positions():
         "z": variables.tagarray[4, 2]
     }
     tag5 = {
-        "x": variables.tagarray[5, 0],
-        "y": variables.tagarray[5, 1],
-        "z": variables.tagarray[5, 2]
+        "x": -variables.APRILTAG_COORDS[5][0],
+        "y": variables.APRILTAG_COORDS[5][1],
+        "z": variables.APRILTAG_COORDS[5][2]
     }
 
     april_tag = {
-        "x": variables.car_pose[0],
+        "x": -variables.car_pose[0],
         "y": 0,
         "z": variables.car_pose[2]
     }
     sensor = {
-        "x": variables.car_pose_tyresensor[0],
+        "x": -variables.car_pose_tyresensor[0],
         "y": 0,
         "z": variables.car_pose_tyresensor[2]
     }
     imu = {
-        "x": variables.estimated_position[0],
+        "x": -variables.estimated_position[0],
         "y": 0,
         "z": variables.estimated_position[2]
     }
@@ -200,6 +196,10 @@ def run_control_server():
     Starts the Flask control server. In a finally block, ensures that GPIO pins are cleaned up.
     """
     try:
-        app.run(host='0.0.0.0', debug=True, use_reloader=False)
+        # Set the logging level to ERROR to suppress HTTP request logs
+        log = logging.getLogger('werkzeug')
+        log.setLevel(logging.ERROR)
+        
+        app.run(host='0.0.0.0', debug=False, use_reloader=False)
     finally:
         GPIO.cleanup()

@@ -12,8 +12,8 @@ classes = ['0', '15', '30', '45', '60', '75', '105', '120', '150', '165']
 
 # List of models to evaluate
 MODEL_PATHS = [
-    "models/angle_classifier_good1.pth",
-    "models/angle_classifier_good2.pth"
+    "models/angle_classifier.pth",
+    "models/angle_classifier.pth"
 ]
 
 # Global cache for loaded models
@@ -21,6 +21,8 @@ model_cache = {}
 
 def load_model(model_path):
     # Check if model is already in cache
+
+    print("angle started")
     if model_path in model_cache:
         return model_cache[model_path]
         
@@ -129,6 +131,7 @@ def save_results_to_csv(results, output_file="prediction_results.csv"):
         for model_path, prediction in results.items():
             model_name = Path(model_path).stem
             writer.writerow([model_name, prediction])
+        
     
     print(f"\nResults saved to {output_file}")
 
@@ -142,6 +145,7 @@ def main():
             try:
                 image = Image.open(variables.cropped_eiffel)
                 results = process_frame_with_models(MODEL_PATHS, image)
+                #save_results_to_csv(results)
                 # print(results)
             except Exception as e:
                 print(f"Error loading image from {variables.cropped_eiffel}: {str(e)}")
