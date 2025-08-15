@@ -426,12 +426,11 @@ For detailed technical analysis, experimental results, and theoretical backgroun
 ## 📞 Support
 
 For technical questions or implementation assistance:
-- Refer to the thesis documentation for detailed technical information
-- Check the frontend README (`frontend/README.md`) for React-specific guidance
+- Contact us directly or through our advisor, Assoc. Prof. Müjdat Soytürk, if you aren't able to find contact information
 - Create an issue in the project repository for bug reports or feature requests
 
 ### System Requirements Summary
-- **Backend**: Raspberry Pi 4B, Python 3.8+, dual cameras, IMU, motor controllers
+- **Backend**: Raspberry Pi 5, Python 3.8+, dual cameras, IMU, motor controllers
 - **Frontend**: Node.js 16+, modern browser with WebGL support
 - **Network**: Local network connectivity between frontend and Raspberry Pi
 
