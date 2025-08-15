@@ -1,0 +1,25 @@
+.camera-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* sola hizala */
+  padding: 10px;
+  margin-top: 50px;
+  margin-bottom: 70px;
+  width: 80%;
+  box-sizing: border-box;
+}
+
+.video-section {
+  margin: 0;
+  padding: 0;
+  border: 2px solid #ccc;      /* isteğe bağlı çerçeve */
+  border-radius: 8px;
+  background-color: #000;
+}
+
+.video-section img {
+  width: 640px;
+  height: 360px;
+  object-fit: cover;
+  display: block;
+}

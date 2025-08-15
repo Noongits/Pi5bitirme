@@ -1,0 +1,44 @@
+/* VehicleTracking3D.css */
+
+.vehicle-3d-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: 960px;     /* Genişlik sınırı (isteğe göre artır/azalt) */
+  margin-right: 20px;   /* Sağa boşluk */
+  margin-left: auto;    /* Sağa yasla */
+  margin-top: 50px;
+ 
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.vehicle-3d-wrapper > div {
+  width: 750px;           
+  height: 360px;
+  position: relative;    /* absolute legend için gerekli */
+  background-color: #e4dddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+
+/* Log butonu */
+.csv-download-button {
+  margin-top: 10px;
+  align-self: flex-end;
+  padding: 8px 16px;
+  background-color: #1976d2;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.csv-download-button:hover {
+  background-color: #155a9d;
+}

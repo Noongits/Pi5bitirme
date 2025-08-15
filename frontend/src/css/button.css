@@ -1,0 +1,29 @@
+.button-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  
+  padding: 0;                  /* boşluk kaldır */
+  margin: 10px 0 0 10px;       /* sadece hafif sol ve üst boşluk */
+  margin-left: 50px;
+  
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  gap: 10px;
+}
+
+.forward-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.horizontal-button {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}

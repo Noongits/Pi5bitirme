@@ -1,0 +1,54 @@
+/* Locations.css */
+
+.locations {
+  display: flex;
+  
+  flex: 1;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  
+  gap: 20px;
+  padding: 5px 10px;
+  margin-left: auto;
+  box-sizing: border-box;
+
+  font-family: Arial, sans-serif;
+  color: #ffffff;
+}
+
+.locations h3 {
+  margin: 0;
+  font-weight: bold;
+}
+
+.locations p {
+  margin: 4px 0;
+}
+
+/* Yükleniyor yazısı */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+
+  width: 50%;
+  height: 100px;
+  font-family: Arial, sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  color: #ffffff;
+  animation: blink 1s infinite;
+}
+
+/* Yanıp sönen efekt */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
