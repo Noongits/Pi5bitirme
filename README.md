@@ -308,49 +308,49 @@ const BASE_URL = "http://raspberrypi.local:5000";
 
 ```
 Pi5bitirme/
-├── backend/                      # Raspberry Pi Backend
-│   ├── src/                      # Core system modules
-│   │   ├── main.py               # System orchestrator
-│   │   ├── navigation.py         # Path planning & execution
-│   │   ├── localisation.py       # Multi-sensor position estimation
-│   │   ├── motor_controller.py   # 4WD motor control
-│   │   ├── web.py                # Flask API server
-│   │   ├── apriltag_detection.py # Fiducial marker processing
-│   │   ├── stereo_distance.py    # Dual-camera ranging
-│   │   ├── mono_distance.py      # Single-camera distance
-│   │   ├── gyroscope.py          # IMU orientation tracking
-│   │   ├── wheel_sensor.py       # Encoder odometry
-│   │   ├── detect_and_crop.py    # Landmark detection
-│   │   ├── manhattan_navigation.py # Grid path planning
-│   │   ├── variables.py          # Global configuration
-│   │   └── cam_calibration/      # Camera calibration tools
+├── backend/                            # Raspberry Pi Backend
+│   ├── src/                            # Core system modules
+│   │   ├── main.py                     # System orchestrator
+│   │   ├── navigation.py               # Path planning & execution
+│   │   ├── localisation.py             # Multi-sensor position estimation
+│   │   ├── motor_controller.py         # 4WD motor control
+│   │   ├── web.py                      # Flask API server
+│   │   ├── apriltag_detection.py       # Fiducial marker processing
+│   │   ├── stereo_distance.py          # Dual-camera ranging
+│   │   ├── mono_distance.py            # Single-camera distance
+│   │   ├── gyroscope.py                # IMU orientation tracking
+│   │   ├── wheel_sensor.py             # Encoder odometry
+│   │   ├── detect_and_crop.py          # Landmark detection
+│   │   ├── manhattan_navigation.py     # Grid path planning
+│   │   ├── variables.py                # Global configuration
+│   │   └── cam_calibration/            # Camera calibration tools
 │   │       ├── camera_calibration.py
 │   │       └── capture_dual_cam.py
-│   └── scripts/                  # Testing & calibration utilities
+│   └── scripts/                        # Testing & calibration utilities
 │       ├── tagtest_localization.py
 │       ├── dual_camera_capture.py
 │       └── distance_test.py
-├── frontend/                     # React Frontend Application
-│   ├── public/                   # Static assets
-│   │   ├── index.html           # Main HTML template
-│   │   ├── eyfelkulesi.stl      # 3D Eiffel Tower model
-│   │   └── truck.stl            # 3D vehicle model
-│   ├── src/                     # React source code
-│   │   ├── components/          # React components
-│   │   │   ├── HomePage.jsx     # Main dashboard
-│   │   │   ├── LoginPage.jsx    # Authentication
-│   │   │   ├── VehicleTracking3D.jsx # 3D visualization
-│   │   │   ├── Camera.jsx       # Live video feed
-│   │   │   ├── Buttons.jsx      # Control interface
-│   │   │   ├── Locations.jsx    # Position display
-│   │   │   └── Header.jsx       # Navigation header
-│   │   ├── css/                 # Component styles
-│   │   ├── assets/              # Images and resources
-│   │   ├── App.jsx              # Main App component
-│   │   └── index.jsx            # Entry point
-│   ├── package.json             # Dependencies & scripts
-│   └── README.md                # Frontend documentation
-└── README.md                    # Main project documentation
+├── frontend/                           # React Frontend Application
+│   ├── public/                         # Static assets
+│   │   ├── index.html                  # Main HTML template
+│   │   ├── eyfelkulesi.stl             # 3D Eiffel Tower model
+│   │   └── truck.stl                   # 3D vehicle model
+│   ├── src/                            # React source code
+│   │   ├── components/                 # React components
+│   │   │   ├── HomePage.jsx            # Main dashboard
+│   │   │   ├── LoginPage.jsx           # Authentication
+│   │   │   ├── VehicleTracking3D.jsx   # 3D visualization
+│   │   │   ├── Camera.jsx              # Live video feed
+│   │   │   ├── Buttons.jsx             # Control interface
+│   │   │   ├── Locations.jsx           # Position display
+│   │   │   └── Header.jsx              # Navigation header
+│   │   ├── css/                        # Component styles
+│   │   ├── assets/                     # Images and resources
+│   │   ├── App.jsx                     # Main App component
+│   │   └── index.jsx                   # Entry point
+│   ├── package.json                    # Dependencies & scripts
+│   └── README.md                       # Frontend documentation
+└── README.md                           # Main project documentation
 ```
 
 ## 🧪 Testing & Validation
